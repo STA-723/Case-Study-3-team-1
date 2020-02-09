@@ -1,0 +1,40 @@
+---
+title: "eda_yc"
+author: "YunranChen"
+date: "1/24/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(corrplot)
+library(naniar)
+library(ggplot2)
+library(dplyr)
+library(tibble)
+library(tidyr)
+library(purrr)
+library(lme4)
+library(jpeg)
+library(ggpubr)
+library(grid)
+library(ggmosaic)
+library(stringr)
+library(tidyverse)
+library(readr)
+```
+
+
+```{r}
+pth="/Users/yunranchen/GoDuke/20Spring/STAT723CaseStudy/Case-Study-3-team-1/Harvard_CAS_2001/DS0001/"
+format <- read_table(paste0(pth,"04291-0001-Record_layout.txt"),skip = 6)
+format <- format[-c(1:2),]%>%mutate(start=as.numeric(Start),end=as.numeric(End))%>%
+  mutate(cols=end-start+1)
+data = read_fwf(file=paste0(pth,"04291-0001-Data.txt"),col_positions = fwf_positions(start=format$start,end=format$end, col_names = format$Variable),na=c("."))
+rbind(data[1,],dat01[1,])
+head(data)
+```
+
+
+
+
