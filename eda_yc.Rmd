@@ -22,16 +22,26 @@ library(ggmosaic)
 library(stringr)
 library(tidyverse)
 library(readr)
+library(stringr)
 ```
 
 
-```{r}
+```{r readdata}
 pth="/Users/yunranchen/GoDuke/20Spring/STAT723CaseStudy/Case-Study-3-team-1/Harvard_CAS_2001/DS0001/"
 format <- read_table(paste0(pth,"04291-0001-Record_layout.txt"),skip = 6)
 format <- format[-c(1:2),]%>%mutate(start=as.numeric(Start),end=as.numeric(End))
-data = read_fwf(file=paste0(pth,"04291-0001-Data.txt"),col_positions = fwf_positions(start=format$start,end=format$end, col_names = format$Variable),na=c("."))
+dat = read_fwf(file=paste0(pth,"04291-0001-Data.txt"),col_positions = fwf_positions(start=format$start,end=format$end, col_names = format$Variable),na=c("."))
+colnames(dat)=str_to_lower(colnames(dat))
+save(dat,file = "dat.rdata")
 ```
 
+```{r load data}
+load("data2001.rdata")
+```
 
+```{r}
+head(data2001)
+
+```
 
 
