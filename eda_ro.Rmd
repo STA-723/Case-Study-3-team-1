@@ -1,0 +1,67 @@
+---
+title: "eda_yc"
+author: "YunranChen"
+date: "1/24/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(corrplot)
+library(naniar)
+library(ggplot2)
+library(dplyr)
+library(tibble)
+library(tidyr)
+library(purrr)
+library(lme4)
+library(jpeg)
+library(ggpubr)
+library(grid)
+library(ggmosaic)
+library(stringr)
+library(tidyverse)
+library(readr)
+library(stringr)
+```
+
+
+```{r readdata}
+pth="/Harvard_CAS_1993/DS0001/"
+format <- read_table(paste0(pth,"04291-0001-Record_layout.txt"),skip = 6)
+format <- format[-c(1:2),]%>%mutate(start=as.numeric(Start),end=as.numeric(End))
+dat = read_fwf(file=paste0(pth,"04291-0001-Data.txt"),col_positions = fwf_positions(start=format$start,end=format$end, col_names = format$Variable),na=c("."))
+colnames(dat)=str_to_lower(colnames(dat))
+save(dat,file = "dat.rdata")
+```
+
+```{r load data}
+load("dat.rdata")
+```
+The preference for smoking
+```{r}
+summary(dat[c("e3","e4","e6")])
+```
+Preference for drinking
+```{r}
+summary(dat[c("c1","c7","c11")])
+```
+Boxplot Drinking
+```{r}
+dat_select=data.frame(gpa=dat["f5"],drink=dat["c1"],smoke=dat["e3"])
+dat_select=na.omit(dat_select)
+boxplot(c1~f5,data=dat_select,xlab="grade", ylab="drinking")
+```
+
+Smoking vs grade
+```{r}
+boxplot(e3~f5,data=dat_select,xlab="grade", ylab="smoking")
+```
+
+Smoking and drinking
+```{r}
+boxplot(e3~c1,data=dat_select,xlab="drinking", ylab="smoking")
+```
+
+
+
