@@ -1,0 +1,68 @@
+---
+title: "variables"
+author: "YunranChen"
+date: "2/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(tidy=FALSE, warning=FALSE, message=FALSE, cache=TRUE, 
+               comment=NA, verbose=TRUE, fig.width=6, fig.height=4)
+library(corrplot)
+library(naniar)
+library(ggplot2)
+library(dplyr)
+library(tibble)
+library(tidyr)
+library(purrr)
+library(lme4)
+library(jpeg)
+library(ggpubr)
+library(grid)
+library(ggmosaic)
+library(stringr)
+library(tidyverse)
+library(readr)
+library(stringr)
+library("lavaan")
+theme_set(theme_bw(base_size=12))
+
+```
+
+2001:
+
+About academic: f5 (GPA); f1-f4
+Smoking behavior: e3 (most important); e11-e14; use e3 to impute e4-e10
+drinking behavior: c1,c2,c4(need imputation),c7,c10 [not for now c17]
+Greek life: a5,a6,a8d
+
+6.07% missing: 10242/10904
+8.63% missing: 9984/10904 if include greek life
+
+```{r load data}
+load("dat.rdata")
+dat2001=dat2001%>%select(-coll_id,-serial)
+
+## Study id of the complete cases
+ids01=dat2001%>%select(study_id,f5,e3,e11:e14,c1,c2,c7,c10)%>%na.omit()%>%pull(study_id)
+#with greek life
+ids01_wgl=dat2001%>%select(study_id,a5,a6,a8d,f5,e3,e11:e14,c1,c2,c7,c10)%>%na.omit()%>%pull(study_id)
+
+# select complete cases
+dat_01=dat2001%>%filter(study_id%in%ids01,f5!=99,f5!=10)
+
+## impute the data
+# impute e4-e10 using e3
+dat_01%>%group_by(c1,c2,c4)%>%summarise(n())
+dat_01$e4[dat_01$e3==1]=1
+dat_01$e5[dat_01$e3==1]=0 # 0-represent non-smoker
+dat_01$e6[dat_01$e3==1]=0
+dat_01$e7[dat_01$e3==1]=1
+dat_01$e8[dat_01$e3==1]=1
+dat_01$e9[dat_01$e3==1]=1 
+dat_01$e10[dat_01$e3==1]=0 # 0-represent non-smoker
+# impute c4 using c10
+dat_01$c4[(dat_01$c1==1)&(dat_01$c2==1)]=0 # 0-represent non frequent drinker
+```
+
+
