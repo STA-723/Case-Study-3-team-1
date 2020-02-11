@@ -6,7 +6,8 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(tidy=FALSE, warning=FALSE, message=FALSE, cache=TRUE, 
+               comment=NA, verbose=TRUE, fig.width=6, fig.height=4)
 library(corrplot)
 library(naniar)
 library(ggplot2)
@@ -23,25 +24,216 @@ library(stringr)
 library(tidyverse)
 library(readr)
 library(stringr)
+theme_set(theme_bw(base_size=12))
 ```
 
 
-```{r readdata}
+```{r readdata, eval=FALSE, include=FALSE}
 pth="/Users/yunranchen/GoDuke/20Spring/STAT723CaseStudy/Case-Study-3-team-1/Harvard_CAS_2001/DS0001/"
 format <- read_table(paste0(pth,"04291-0001-Record_layout.txt"),skip = 6)
 format <- format[-c(1:2),]%>%mutate(start=as.numeric(Start),end=as.numeric(End))
 dat = read_fwf(file=paste0(pth,"04291-0001-Data.txt"),col_positions = fwf_positions(start=format$start,end=format$end, col_names = format$Variable),na=c("."))
 colnames(dat)=str_to_lower(colnames(dat))
-save(dat,file = "dat.rdata")
+#save(dat,file = "dat.rdata")
+
+pth="/Users/yunranchen/GoDuke/20Spring/STAT723CaseStudy/Case-Study-3-team-1/Harvard_CAS_1997/DS0001/"
+format <- read_table(paste0(pth,"03163-0001-Record_layout.txt"),skip = 6)
+format <- format[-c(1:2),]%>%mutate(start=as.numeric(Start),end=as.numeric(End))
+format <- na.omit(format)
+dat = read_fwf(file=paste0(pth,"03163-0001-Data.txt"),col_positions = fwf_positions(start=format$start,end=format$end, col_names = format$Variable),na=c("."))
+colnames(dat)=str_to_lower(colnames(dat))
+dat1997=dat
+save(dat1997,dat2001,file = "dat.rdata")
 ```
 
 ```{r load data}
-load("data2001.rdata")
+load("dat.rdata")
+dat2001=dat2001%>%select(-coll_id,-serial)
+dat1997=dat1997%>%select(-coll_id)
 ```
 
-```{r}
-head(data2001)
+ - description on 1997, 2001 dataset separately. Get an idea of how the smooking behavior looks like. Check the correlation between these activities
+ - possible missing value imputation and removals
+ - compare the trend if possible
+ - check the correlation between smooking and gpa
+ - some EDA on background if possible
+ 
+## EDA on academic performance
 
+- variables related to academic performance:
+
+2001:
+f1-f1
+f2-NA
+f3-f2
+f4-f3
+f5-f4 GPA
+
+1997:
+e19
+
+- 2.60% missing value (2001) -> remove
+- 2.96% missing value (1997) -> remove
+
+- 2001&1997: majority is satisfied with education/life/friends/gpa/have access to help
+- 1997&2001 has similar distribution
+- the correlation between variables are as expected
+
+```{r gpa}
+mean((is.na(dat2001$f5))|(dat2001$f5==99)|(dat2001$f5==10))
+mean((is.na(dat1997$f4))|(dat1997$f4==10))
+dat_01=dat2001%>%filter(!is.na(f5),f5!=99,f5!=10)
+dat_97=dat1997%>%filter(!is.na(f4),f4!=10)
+
+dat_gpa=data.frame(gpa=c(dat_01$f5,dat_97$f4)%>%factor(x = .,levels = 1:9,labels =  c("A","A-","B+","B","B-","C+","C","C-","D")),year=rep(c("97","01"),c(nrow(dat_97),nrow(dat_01)))%>%as.factor())
+
+ggplot(data = dat_gpa)+geom_bar(aes(x=gpa,y=..count..,fill=year),position = "dodge")
+#ggplot(data = dat_gpa)+geom_bar(aes(x=year,y=..count..,fill=gpa))
+```
+
+```{r aca}
+#colnames(dat_01)
+dat_01 %>%
+  select(f1:f4) %>% 
+  gather() %>% 
+  ggplot(aes(value)) +
+    facet_wrap(~ key, scales = "free") +
+    geom_bar()
+
+dat_97 %>%
+  select(f1:f3,e19_a:e19_f) %>% 
+  gather() %>% 
+  ggplot(aes(value)) +
+    facet_wrap(~ key, scales = "free") +
+    geom_bar()
+#dat_97%>%colnames()
+```
+
+```{r coraca}
+M01=cor(as.matrix(na.omit(dat_01%>%select(f5,f1:f4))))
+corrplot.mixed(M01,number.cex=.6, upper="ellipse")
+M97=cor(as.matrix(na.omit(dat_97%>%select(f4,f1:f3,e19_a:e19_f))))
+corrplot.mixed(M97,number.cex=.6, upper="ellipse")
+```
+
+## description on smoking behavior
+
+- variables related to smooking
+
+2001-1997
+b22-b4 policy
+b23-b5 favor policy
+e2 merge 16-18
+e2a-e2a
+e2b-e2b
+e2c-NA
+e3-e3(need to merge the measurement)
+e3: smoking behavior
+e4-e3
+use e3 impute e4-10->NA
+NA-e4
+
+e11toe14-NA
+
+- missing value
+2001: 1.53%
+1997: 0.416%
+- decrease on the smoking people from 1997 to 2001
+- significant (chisq) positive relation between smoking and gpa (2001 is more significant)
+
+
+```{r smoking}
+
+mean((is.na(dat2001$e3)))
+mean((is.na(dat1997$e3)))
+dat_01=dat2001%>%filter(!is.na(f5),f5!=99,f5!=10,!is.na(e3))
+dat_97=dat1997%>%filter(!is.na(f4),f4!=10,!is.na(e3))
+
+dat_smo=data.frame(gpa=c(dat_01$e3==1,dat_97$e3==1)%>%factor(x = .,levels = c(TRUE,FALSE),labels =  c("None-smoke","smoke")),year=rep(c("97","01"),c(nrow(dat_97),nrow(dat_01)))%>%as.factor())
+
+ggplot(data = dat_smo)+geom_bar(aes(x=gpa,y=..count..,fill=year),position = "dodge")
+ggplot(data = dat_smo)+geom_bar(aes(x=year,y=..count..,fill=gpa))
+
+dat_smogpa=data.frame(
+  smo=c(dat_01$e3==1,dat_97$e3==1)%>%
+    factor(x = .,levels = c(TRUE,FALSE),labels =  c("None-smoke","smoke")),
+  year=rep(c("97","01"),c(nrow(dat_97),nrow(dat_01)))%>%as.factor(),
+  gpa=c(dat_01$f5,dat_97$f4)%>%
+    factor(x = .,levels = 1:9,labels =  c("A","A-","B+","B","B-","C+","C","C-","D")))
+ggplot(data=dat_smogpa)+geom_mosaic(aes(x=product(smo,gpa),fill=smo))+
+  facet_grid(year~.)
+chisq.test(x = dat_smogpa%>%filter(year=="01")%>%pull(smo),y = dat_smogpa%>%filter(year=="01")%>%pull(gpa))
+chisq.test(x = dat_smogpa%>%filter(year=="97")%>%pull(smo),y = dat_smogpa%>%filter(year=="97")%>%pull(gpa))
+
+dat_01 %>%
+  select(e2a:e3,e11:e14,f5) %>% 
+  mutate(f5=as.factor(f5)) %>%
+  gather(data=.,key = key,value = value,-f5) %>% 
+  ggplot(aes(x=value,fill=f5)) +
+    facet_wrap(~ key, scales = "free") +
+    geom_bar(position = "fill")
+
+dat_01 %>%
+  select(e4:e10,f5) %>% 
+  mutate(f5=as.factor(f5)) %>%
+  gather(data=.,key = key,value = value,-f5) %>% 
+  ggplot(aes(x=value,fill=f5)) +
+    facet_wrap(~ key, scales = "free") +
+    geom_bar(position = "fill")
+
+dat_97 %>%
+  select(b4:b5,e2_a:e4,f4) %>% 
+  mutate(f4=as.factor(f4)) %>%
+  gather(data=.,key = key,value = value,-f4) %>% 
+  ggplot(aes(x=value,fill=f4)) +
+    facet_wrap(~ key, scales = "free") +
+    geom_bar(position = "fill")
+
+#dat_97%>%colnames()
+#dat_01%>%colnames()
+```
+
+- weak correlation between gpa and smoking
+- interesting patterns about smoking behavior: # of cigarettes positively related to alone/with others
+- date of start smoking regularly related to #days smoke
+- date of start smoking regularly related to # cigarets smoke
+- relation between school policy and opinion on school policy
+
+```{r smogpacorr}
+M01=cor(as.matrix(na.omit(dat_01%>%select(f5,e2a:e3,e11:e14))))
+corrplot.mixed(M01,number.cex=.6, upper="ellipse")
+M01=cor(as.matrix(na.omit(dat_01%>%select(f5,e4:e10))))
+corrplot.mixed(M01,number.cex=.6, upper="ellipse")
+
+M97=cor(as.matrix(na.omit(dat_97%>%select(f4,b4:b5,e2_a,e2_b,e3:e4))))
+corrplot.mixed(M97,number.cex=.6, upper="ellipse")
+
+```
+
+
+```{r eval=FALSE, include=FALSE}
+# description on smoking behavior
+head(dat)
+colname=colnames(dat)
+secname=str_detect(colname,"^c[0-9]")
+setdat=dat[,secname]
+vis_miss(setdat,warn_large_data = FALSE)
+gg_miss_upset(setdat)
+gg_miss_var(setdat)
+ggplot(data = setdat,aes(x=c7,y=..count..))+geom_bar()
+M=cor(as.matrix(na.omit(setdat)))
+M=M[!is.na(M[1,]),!is.na(M[1,])]
+corrplot.mixed(M[1:30,1:30],number.cex=.6, upper="ellipse")
+corrplot.mixed(M[31:60,31:60],number.cex=.6, upper="ellipse")
+corrplot.mixed(M[61:90,61:90],number.cex=.6, upper="ellipse")
+inds=colname[secname]
+inds=sum(secname)
+for (i in 1:inds){
+  x=c(setdat[,i]%>%unlist())
+  plotdat=data.frame(x=factor(x))
+  p=ggplot(data = plotdat,aes(x=x,y=..count..))+geom_bar()+xlab(colnames(setdat[,i]))
+  save(p,file = paste0(colnames(setdat[,i]),".png"))
+}
 ```
 
 
