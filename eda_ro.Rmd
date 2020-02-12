@@ -63,5 +63,7 @@ Smoking and drinking
 boxplot(e3~c1,data=dat_select,xlab="drinking", ylab="smoking")
 ```
 
+c1 and c2
+
 
 
