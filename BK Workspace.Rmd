@@ -1,0 +1,103 @@
+---
+title: "BK Workspace"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+NUMBER OF TIME GOT DRUNK BY GREEK LIFE
+```{r}
+dat %>% #Not in a fraternity
+  mutate(a5 =as.factor(a5)) %>% 
+  filter(a5 == 0) %>% 
+  ggplot(aes(c13)) + geom_histogram()
+
+dat %>% #In a fraternity
+    mutate(a5 =as.factor(a5)) %>% 
+  filter(a5 == 1) %>% 
+  ggplot(aes(c13)) + geom_histogram()
+
+dat %>% 
+  group_by(a5) %>% 
+  summarize(avg = mean(c13, na.rm = TRUE))
+```
+
+NUMBER OF TIMES GOT DRUNK BY *LIVING IN* GREEK LIFE
+```{r}
+dat %>% #Not in a fraternity
+  mutate(a6 =as.factor(a6)) %>% 
+  filter(a6 != 4) %>% 
+  ggplot(aes(c13)) + geom_histogram()
+
+dat %>% #In a fraternity
+    mutate(a6 =as.factor(a6)) %>% 
+  filter(a6 == 4) %>% 
+  ggplot(aes(c13)) + geom_histogram()
+
+dat %>%
+  mutate(live_in_frat = case_when(
+    a6 == 4 ~ 1,
+    a6 != 4 ~ 0
+  )) %>% 
+  group_by(live_in_frat) %>% 
+  summarize(avg = mean(c13, na.rm = TRUE))
+```
+
+NUMBER OF TIME GOT DRUNK BY GENDER
+```{r}
+dat %>%
+  mutate(a2 =as.factor(a2)) %>% 
+  filter(a2 == 0) %>% 
+  ggplot(aes(c13)) + geom_histogram()
+
+dat %>% 
+  mutate(a2 =as.factor(a2)) %>% 
+  filter(a2 == 1) %>% 
+  ggplot(aes(c13)) + geom_histogram()
+
+dat %>% 
+  group_by(a2) %>% 
+  summarize(avg = mean(c13, na.rm = TRUE))
+```
+
+NUMBER OF TIMES GOT DRUNK BY CLASS YEAR
+```{r}
+dat %>%
+  mutate(a3 =as.factor(a3)) %>% 
+  filter(a3 == 0) %>% 
+  ggplot(aes(c13)) + geom_histogram()
+
+dat %>%
+  mutate(a3 =as.factor(a3)) %>% 
+  filter(a3 == 1) %>% 
+  ggplot(aes(c13)) + geom_histogram()
+
+dat %>%
+  mutate(a3 =as.factor(a3)) %>% 
+  filter(a3 == 2) %>% 
+  ggplot(aes(c13)) + geom_histogram()
+
+dat %>%
+  mutate(a3 =as.factor(a3)) %>% 
+  filter(a3 == 3) %>% 
+  ggplot(aes(c13)) + geom_histogram()
+
+dat %>%
+  mutate(a3 =as.factor(a3)) %>% 
+  filter(a3 == 4) %>% 
+  ggplot(aes(c13)) + geom_histogram()
+
+dat %>%
+  mutate(a3 =as.factor(a3)) %>% 
+  filter(a3 == 5) %>% 
+  ggplot(aes(c13)) + geom_histogram()
+
+dat %>% 
+  group_by(a3) %>% 
+  summarize(avg = mean(c13, na.rm = TRUE))
+
+
+```
+
