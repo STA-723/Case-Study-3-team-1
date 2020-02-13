@@ -1,6 +1,6 @@
 ---
 title: "variables"
-author: "YunranChen"
+author: "Rihui"
 date: "2/11/2020"
 output: html_document
 ---
@@ -24,7 +24,8 @@ library(stringr)
 library(tidyverse)
 library(readr)
 library(stringr)
-library("lavaan")
+library(lavaan)
+library(blavaan)
 theme_set(theme_bw(base_size=12))
 
 ```
@@ -64,6 +65,42 @@ dat_01$e9[dat_01$e3==1]=1
 dat_01$e10[dat_01$e3==1]=0 # 0-represent non-smoker
 # impute c4 using c10
 dat_01$c4[(dat_01$c1==1)&(dat_01$c2==1)]=0 # 0-represent non frequent drinker
+```
+Feature Engineering
+```{r}
+dat_01['bplus']=dat_01['f5']<=3 ###Select those who receive B+ or more.
+```
+
+Specify the SEM model, get the ML estimate
+```{r}
+model <- '
+  # measurement model
+     drink=~ c1 + c2 + c7 +c10
+     smoke=~ e3 + e11
+     academic=~ bplus + f4
+     greek=~ a5
+  # regressions
+    drink ~ greek + smoke
+    academic ~ drink + smoke + greek
+  # residual correlations
+    c1 ~~ c2 + c7 
+    c2 ~~ c7
+    c7 ~~ c10
+
+    
+'
+fit <- sem(model, data=dat_01)
+summary(fit, standardized=TRUE)
+```
+Fit a Bayesian Version
+```{r}
+fit <- bsem(model, data=dat_01,
+            dp=dpriors(nu="normal(5,10)"),
+            sample= 3000,
+            burnin = 500,
+            n.chains = 1
+            )
+summary(fit)
 ```
 
 
