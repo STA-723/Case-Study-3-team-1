@@ -1,0 +1,50 @@
+---
+title: "Patterns of Airbnb Listings in NYC"
+author: "Frances Hung, Yunran Chen, Keru Wu"
+output:
+  beamer_presentation: default
+  slidy_presentation: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.height = 5)
+library(corrplot)
+library(naniar)
+library(ggplot2)
+library(dplyr)
+library(tibble)
+library(tidyr)
+library(purrr)
+library(lme4)
+library(jpeg)
+library(ggpubr)
+library(grid)
+library(stringr)
+library("ggmap")
+library(ggmosaic)
+library(MASS)
+```
+
+
+## Introduction
+
+- Data: 2019 Airbnb listings in NYC, 48895 observations.
+- Goal: Explore Patterns of Listings
+  - Care about price and popularity
+  - What are the influential factors? quantify influence?
+  - Find the most valuable neighborhoods based on price/popularity balance
+  - Set the price of the listing
+  - Name the listing
+- Model: 
+  - CARBayes for `log(price)` and `log(1+reviews_per_month)` respectively.
+  - LDA for text analysis
+
+## EDA
+
+## Data Preprocessing
+
+## Model
+
+## Results
+
+## Discussion
