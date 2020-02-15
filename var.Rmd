@@ -73,7 +73,7 @@ dat_01$e10[dat_01$e3==1]=0 # 0-represent non-smoker
 dat_01$c4[(dat_01$c1==1)&(dat_01$c2==1)]=0 # 0-represent non frequent drinker
 ```
 
-Problem Drinking Behaviors (C17)
+Variables for Drinking 2001 
 ```{r}
 #Use C7, C11, C12, and problem_drinking for DRINKING latent variable
 #Use A5, A6, A8d for GREEK latent variable
@@ -127,8 +127,8 @@ background(only cosider corr>0.1):
 2001:a2,a7,g6,g3,g15,g14,g16
 
 
-drinking:
-greek life:
+drinking: c5,c11, c12, c16a-l (these correspond directly to 2001, just different number question)
+greek life: a5, a6, a8d (exact same as 2001)
 
 
 
