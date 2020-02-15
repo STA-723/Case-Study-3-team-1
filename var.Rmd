@@ -32,9 +32,14 @@ theme_set(theme_bw(base_size=12))
 2001:
 
 About academic: f5 (GPA); f1-f4
-Smoking behavior: e3 (most important); e11-e14; use e3 to impute e4-e10
+Smoking behavior: e3 (most important)+(e4-e10); e11-e14(potential/passive smoking behavior); use e3 to impute e4-e10
 drinking behavior: c1,c2,c4(need imputation),c7,c10 [not for now c17]
 Greek life: a5,a6,a8d
+
+background corr>0.1: a2,a7b,a7c(all related to gpa, a7b,a7c also related to smooking)
+background corr>0.05:a1,a2,a3,a4a,a6a,a7b,a7c,a7d
+background corr>0.1: g6,g7,g8,g3,g15,g16(insteresting that mother's drinking behavior influence a lot compared to father's)
+background corr>0.05:g1,g2,g6,g7,g12a,g17,g18,g3,"g4"  "g5a" "g5b" "g6"  "g14" "g15" "g16"
 
 6.07% missing: 10242/10904
 8.63% missing: 9984/10904 if include greek life
@@ -42,7 +47,6 @@ Greek life: a5,a6,a8d
 ```{r load data}
 load("dat.rdata")
 dat2001=dat2001 %>% dplyr::select(-coll_id,-serial)
-
 ## Study id of the complete cases
 ids01=dat2001%>% dplyr::select(study_id,f5,e3,e11:e14,c1,c2,c7,c10)%>%na.omit()%>%pull(study_id)
 
@@ -50,7 +54,10 @@ ids01=dat2001%>% dplyr::select(study_id,f5,e3,e11:e14,c1,c2,c7,c10)%>%na.omit()%
 ids01_wgl=dat2001%>% dplyr::select(study_id,a5,a6,a8d,f5,e3,e11:e14,c1,c2,c7,c10)%>%na.omit()%>%pull(study_id)
 
 # select complete cases
-dat_01=dat2001%>%filter(study_id%in%ids01,f5!=99,f5!=10)
+dat_01=dat2001%>%filter(study_id%in%ids01_wgl,f5!=99,f5!=10)
+#impute the g3
+g3im=dat_01%>%select(study_id,g3a:g3e)%>%gather(.,g3,value,-study_id)%>%na.omit()%>%select(-value)%>%mutate(g3=as.factor(g3)%>%as.numeric())
+dat_01=left_join(dat_01,g3im,"study_id")%>%dplyr::select(-g3a,-g3b,-g3c,-g3d,-g3e,-g12b)
 
 ## impute the data
 # impute e4-e10 using e3
@@ -107,4 +114,47 @@ dat_01 <- dat_01 %>%
   mutate(problem_drinking = indic_c17a + indic_c17b + indic_c17c + indic_c17d + indic_c17e + indic_c17f + indic_c17g + indic_c17h + indic_c17i +indic_c17j + indic_c17k + indic_c17l)
 
 ```
+
+If consider 1997 and 2001:
+
+
+smooking: (only this one is overlapping)
+1997:e3
+2001:e4
+
+background(only cosider corr>0.1):
+1997:a2,a8,g8,g3,g15,g14,g16
+2001:a2,a7,g6,g3,g15,g14,g16
+
+
+drinking:
+greek life:
+
+
+
+```{r}
+#merge a7 and a8 for 1997 and 2001
+a7im=dat_01%>%select(study_id,a7a:a7d)%>%gather(.,a7,value,-study_id)%>%na.omit()%>%select(-value)%>%mutate(a7=as.factor(a7)%>%as.numeric())
+dat_01=left_join(dat_01,a7im,"study_id")%>%dplyr::select(-a7a,-a7b,-a7c,-a7d)
+dat_01 <- dat_01 %>% 
+dat_97=dat1997%>%filter(a8!=5)
+
+## comparable dataset
+
+# plz add drinking here 
+ids01_97=dat_01%>% dplyr::select(study_id,a5,a6,a8d,f5,e4,a2,a7,g6,g3,g15,g14,g16)%>%na.omit()%>%pull(study_id)
+
+# select complete cases for 2001
+dat_01_97=dat_01%>%filter(study_id%in%ids01_97,f5!=99,f5!=10)
+
+
+# plz add drinking here 
+ids97_01=dat_97%>% dplyr::select(study_id,e3,f4,a2,a8,g8,g3,g15,g14,g16)%>%na.omit()%>%pull(study_id)
+
+# select complete cases for 2001
+dat_97_01=dat_97%>%filter(study_id%in%ids97_01,f4!=10)
+
+```
+
+
 
