@@ -141,15 +141,15 @@ dat_97=dat1997%>%filter(a8!=5)
 
 ## comparable dataset
 
-# plz add drinking here 
-ids01_97=dat_01%>% dplyr::select(study_id,a5,a6,a8d,f5,e4,a2,a7,g6,g3,g15,g14,g16)%>%na.omit()%>%pull(study_id)
+# plz add drinking here (BK: I did, just added c7, for 2001)
+ids01_97=dat_01%>% dplyr::select(study_id,a5,a6,a8d,c7,f5,e4,a2,a7,g6,g3,g15,g14,g16)%>%na.omit()%>%pull(study_id)
 
 # select complete cases for 2001
 dat_01_97=dat_01%>%filter(study_id%in%ids01_97,f5!=99,f5!=10)
 
 
-# plz add drinking here 
-ids97_01=dat_97%>% dplyr::select(study_id,e3,f4,a2,a8,g8,g3,g15,g14,g16)%>%na.omit()%>%pull(study_id)
+# plz add drinking here (BK: I did, just added c5, for 1997)
+ids97_01=dat_97%>% dplyr::select(study_id,e3,f4,a2,a8,c5,g8,g3,g15,g14,g16)%>%na.omit()%>%pull(study_id)
 
 # select complete cases for 2001
 dat_97_01=dat_97%>%filter(study_id%in%ids97_01,f4!=10)
