@@ -35,7 +35,7 @@ theme_set(theme_bw(base_size=12))
 About academic: f5 (GPA); f1-f4
 Smoking behavior: e3 (most important); e11-e14; use e3 to impute e4-e10
 drinking behavior: c1,c2,c4(need imputation),c7,c10 [not for now c17]
-Greek life: a5,a6,a8d
+Greek life: a5,a6 (indicator),a8d
 
 6.07% missing: 10242/10904
 8.63% missing: 9984/10904 if include greek life
