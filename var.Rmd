@@ -136,7 +136,7 @@ greek life: a5, a6, a8d (exact same as 2001)
 #merge a7 and a8 for 1997 and 2001
 a7im=dat_01%>%select(study_id,a7a:a7d)%>%gather(.,a7,value,-study_id)%>%na.omit()%>%select(-value)%>%mutate(a7=as.factor(a7)%>%as.numeric())
 dat_01=left_join(dat_01,a7im,"study_id")%>%dplyr::select(-a7a,-a7b,-a7c,-a7d)
-dat_01 <- dat_01 %>% 
+#dat_01 <- dat_01 %>% 
 dat_97=dat1997%>%filter(a8!=5)
 
 ## comparable dataset
