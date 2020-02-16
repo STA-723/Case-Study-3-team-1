@@ -33,10 +33,11 @@ theme_set(theme_bw(base_size=12))
 
 About academic: f5 (GPA); f1-f4
 Smoking behavior: e3 (most important)+(e4-e10); e11-e14(potential/passive smoking behavior); use e3 to impute e4-e10
-drinking behavior: c7, c11, c12, and problem_drinking
+drinking behavior: c7, c11, c12, and problem_drinking(maybe also include c4)
 Greek life: a5,a6,a8d
 
 background corr>0.1: a2,a7b,a7c(all related to gpa, a7b,a7c also related to smooking)g6,g7,g8,g3,g15,g16(insteresting that mother's drinking behavior influence a lot compared to father's)
+
 background corr>0.05:a1,a2,a3,a4a,a6a,a7b,a7c,a7d,g1,g2,g6,g7,g12a,g17,g18,g3,"g4"  "g5a" "g5b" "g6"  "g14" "g15" "g16"
 
 6.07% missing: 10242/10904
@@ -59,16 +60,19 @@ dat_01=left_join(dat_01,g3im,"study_id")%>%dplyr::select(-g3a,-g3b,-g3c,-g3d,-g3
 
 ## impute the data
 # impute e4-e10 using e3
-dat_01%>%group_by(c1,c2,c4)%>%summarise(n())
 dat_01$e4[dat_01$e3==1]=1
+dat_01$e4[dat_01$e3%in%c(2:5)]=2
 dat_01$e5[dat_01$e3==1]=0 # 0-represent non-smoker
 dat_01$e6[dat_01$e3==1]=0
 dat_01$e7[dat_01$e3==1]=1
+dat_01$e7[dat_01$e3==2]=1
 dat_01$e8[dat_01$e3==1]=1
+dat_01$e8[dat_01$e3==2]=1
 dat_01$e9[dat_01$e3==1]=1 
 dat_01$e10[dat_01$e3==1]=0 # 0-represent non-smoker
-# impute c4 using c10
+# impute c4
 dat_01$c4[(dat_01$c1==1)&(dat_01$c2==1)]=0 # 0-represent non frequent drinker
+dat_01$c4[(dat_01$c1==1)&(dat_01$c2>=1)&is.na(dat_01$c4)]=1
 ```
 
 Variables for Drinking 2001 
@@ -111,8 +115,73 @@ dat_01 <- dat_01 %>%
   mutate(indic_c17k = ifelse(c17k >=3, 1, 0)) %>%
   mutate(indic_c17l = ifelse(c17l >=3, 1, 0)) %>% 
   mutate(problem_drinking = indic_c17a + indic_c17b + indic_c17c + indic_c17d + indic_c17e + indic_c17f + indic_c17g + indic_c17h + indic_c17i +indic_c17j + indic_c17k + indic_c17l)
+```
+
+# final dataset for 2001
+
+About academic: f5 (GPA); f1-f4
+Smoking behavior: e3 (most important),e4,e8; e11-e14(potential/passive smoking behavior); use e3 to impute e4-e10
+drinking behavior: c7, c11, c12, and problem_drinking(maybe also include c4)
+Greek life: a5,a6,a8d
+
+background corr>0.1: a2,a7(all related to gpa, a7b,a7c also related to smooking)g6,g7,g8,g3,g15,g16(insteresting that mother's drinking behavior influence a lot compared to father's)
+
+```{r final2001}
+a7im=dat_01%>%select(study_id,a7a:a7d)%>%gather(.,a7,value,-study_id)%>%na.omit()%>%filter(value>0)%>%select(-value)%>%mutate(a7=as.factor(a7))
+a7imid=dat_01%>%select(study_id,a7a:a7d)%>%gather(.,a7,value,-study_id)%>%na.omit()%>%filter(value>0)%>%group_by(study_id)%>%summarise(n=n())%>%filter(n>1)%>%pull(study_id)
+a7im=a7im%>%filter(!study_id%in%a7imid)
+dat_01=left_join(dat_01,a7im,"study_id")%>%dplyr::select(-a7a,-a7b,-a7c,-a7d)
+
+#here put the variables you want!!!
+dat_01f=dat_01%>%select(f1:f5,e3,e4,c4,c7,c11,c12,problem_drinking,a5,a6,a8d,a2,g6,g7,g8,g3,g15,g16)%>%na.omit()
+
+nrow(dat_01f)/nrow(dat2001)
+#e8 and a7 cause most missing. they both describe the "with whom you current live" can include them if you want.
+gg_miss_upset(dat_01%>%select(f1:f5,e3,e4,c7,c4,c7,c11,c12,problem_drinking,a5,a6,a8d,a2,g6,g7,g8,g3,g15,g16,c4))
 
 ```
+
+Variables for Drinking 1997
+
+```{r}
+
+# Use varibales c5,c11, c12, and problem_drinkin for latent variable
+
+dat_97$c11[is.na(dat_97$c11) == TRUE] <- 1
+dat_97$c12[is.na(dat_97$c12) == TRUE] <- 1
+
+#Imputing NA's as "None" in c17
+dat_97$c16_a[is.na(dat_97$c16_a) == TRUE] <- 1
+dat_97$c16_b[is.na(dat_97$c16_b) == TRUE] <- 1
+dat_97$c16_c[is.na(dat_97$c16_c) == TRUE] <- 1
+dat_97$c16_d[is.na(dat_97$c16_d) == TRUE] <- 1
+dat_97$c16_e[is.na(dat_97$c16_e) == TRUE] <- 1
+dat_97$c16_f[is.na(dat_97$c16_f) == TRUE] <- 1
+dat_97$c16_g[is.na(dat_97$c16_g) == TRUE] <- 1
+dat_97$c16_h[is.na(dat_97$c16_h) == TRUE] <- 1
+dat_97$c16_i[is.na(dat_97$c16_i) == TRUE] <- 1
+dat_97$c16_j[is.na(dat_97$c16_j) == TRUE] <- 1
+dat_97$c16_k[is.na(dat_97$c16_k) == TRUE] <- 1
+dat_97$c16_l[is.na(dat_97$c16_l) == TRUE] <- 1
+
+
+#Creating indicators for "3 or more times"
+dat_97 <- dat_97 %>%
+  mutate(indic_c16a = ifelse(c16_a >=3, 1, 0)) %>% 
+  mutate(indic_c16b = ifelse(c16_b >=3, 1, 0)) %>%
+  mutate(indic_c16c = ifelse(c16_c >=3, 1, 0)) %>%
+  mutate(indic_c16d = ifelse(c16_d >=3, 1, 0)) %>%
+  mutate(indic_c16e = ifelse(c16_e >=3, 1, 0)) %>%
+  mutate(indic_c16f = ifelse(c16_f >=3, 1, 0)) %>%
+  mutate(indic_c16g = ifelse(c16_g >=3, 1, 0)) %>%
+  mutate(indic_c16h = ifelse(c16_h >=3, 1, 0)) %>%
+  mutate(indic_c16i = ifelse(c16_i >=3, 1, 0)) %>%
+  mutate(indic_c16j = ifelse(c16_j >=3, 1, 0)) %>%
+  mutate(indic_c16k = ifelse(c16_k >=3, 1, 0)) %>%
+  mutate(indic_c16l = ifelse(c16_l >=3, 1, 0)) %>% 
+  mutate(problem_drinking = indic_c16a + indic_c16b + indic_c16c + indic_c16d + indic_c16e + indic_c16f + indic_c16g + indic_c16h + indic_c16i +indic_c16j + indic_c16k + indic_c16l)
+```
+
 
 
 If consider 1997 and 2001:
@@ -125,74 +194,32 @@ smooking: (only this one is overlapping)
 background(only cosider corr>0.1):
 1997:a2,a8,g8,g3,g15,g14,g16
 2001:a2,a7,g6,g3,g15,g14,g16
+(a8(1997)-a7(2001))
 
-
-drinking: c5,c11, c12, c16a-l (these correspond directly to 2001, just different number question)
+drinking: c5,c11, c12, c16a-l (these correspond directly to 2001, just different number question)(maybe include c8)
 greek life: a5, a6, a8d (exact same as 2001)
 
 
 
+
 ```{r}
-#merge a7 and a8 for 1997 and 2001
-a7im=dat_01%>%select(study_id,a7a:a7d)%>%gather(.,a7,value,-study_id)%>%na.omit()%>%select(-value)%>%mutate(a7=as.factor(a7)%>%as.numeric())
-dat_01=left_join(dat_01,a7im,"study_id")%>%dplyr::select(-a7a,-a7b,-a7c,-a7d)
-dat_97=dat1997%>%filter(a8!=5)
 
 ## comparable dataset
 
 # plz add drinking here (BK: I did, just added c7, for 2001)
-ids01_97=dat_01%>% dplyr::select(study_id,a5,a6,a8d,c7,f5,e4,a2,a7,g6,g3,g15,g14,g16)%>%na.omit()%>%pull(study_id)
-
+ids01_97=dat_01%>% dplyr::select(study_id,a5,a6,a8d,c7,c11,c12,problem_drinking,f5,e4,a2,g6,g3,g15,g14,g16)%>%na.omit()%>%pull(study_id)
 # select complete cases for 2001
-dat_01_97=dat_01%>%filter(study_id%in%ids01_97,f5!=99,f5!=10)
-
+dat_01_97=dat_01%>%filter(study_id%in%ids01_97,f5!=99,f5!=10)%>%select(study_id,a5,a6,a8d,c7,c11,c12,problem_drinking,f5,e4,a2,g6,g3,g15,g14,g16,c4)
+nrow(dat_01_97)/nrow(dat2001)
 
 # plz add drinking here (BK: I did, just added c5, for 1997)
-ids97_01=dat_97%>% dplyr::select(study_id,e3,f4,a2,a8,c5,g8,g3,g15,g14,g16)%>%na.omit()%>%pull(study_id)
+ids97_01=dat_97%>% dplyr::select(study_id,e3,f4,a2,c5,c11,c12,problem_drinking,g8,g3,g15,g14,g16,c8)%>%na.omit()%>%pull(study_id)
 
 # select complete cases for 2001
-dat_97_01=dat_97%>%filter(study_id%in%ids97_01,f4!=10)
+dat_97_01=dat_97%>%filter(study_id%in%ids97_01,f4!=10)%>%mutate(c8=c8-1)%>%select(study_id,e3,f4,a2,c5,c11,c12,problem_drinking,g8,g3,g15,g14,g16,c8)
+nrow(dat_97_01)/nrow(dat1997)
 
 ```
 
-Variables for Drinking 1997
-
-```{r}
-# Use varibales c5,c11, c12, and problem_drinkin for latent variable
-
-dat_97$c11[is.na(dat_97$c11) == TRUE] <- 1
-dat_97$c12[is.na(dat_97$c12) == TRUE] <- 1
-
-#Imputing NA's as "None" in c17
-dat_97$c16a[is.na(dat_97$c16_a) == TRUE] <- 1
-dat_97$c16b[is.na(dat_97$c16_b) == TRUE] <- 1
-dat_97$c16c[is.na(dat_97$c16_c) == TRUE] <- 1
-dat_97$c16d[is.na(dat_97$c16_d) == TRUE] <- 1
-dat_97$c16e[is.na(dat_97$c16_e) == TRUE] <- 1
-dat_97$c16f[is.na(dat_97$c16_f) == TRUE] <- 1
-dat_97$c16g[is.na(dat_97$c16_g) == TRUE] <- 1
-dat_97$c16h[is.na(dat_97$c16_h) == TRUE] <- 1
-dat_97$c16i[is.na(dat_97$c16_i) == TRUE] <- 1
-dat_97$c16j[is.na(dat_97$c16_j) == TRUE] <- 1
-dat_97$c16k[is.na(dat_97$c16_k) == TRUE] <- 1
-dat_97$c16l[is.na(dat_97$c16_l) == TRUE] <- 1
-
-dat_97$c17
-#Creating indicators for "3 or more times"
-dat_97 <- dat_97 %>% 
-  mutate(indic_c17a = ifelse(c17_a >=3, 1, 0)) %>% 
-  mutate(indic_c17b = ifelse(c17_b >=3, 1, 0)) %>%
-  mutate(indic_c17c = ifelse(c17_c >=3, 1, 0)) %>%
-  mutate(indic_c17d = ifelse(c17_d >=3, 1, 0)) %>%
-  mutate(indic_c17e = ifelse(c17_e >=3, 1, 0)) %>%
-  mutate(indic_c17f = ifelse(c17_f >=3, 1, 0)) %>%
-  mutate(indic_c17g = ifelse(c17_g >=3, 1, 0)) %>%
-  mutate(indic_c17h = ifelse(c17_h >=3, 1, 0)) %>%
-  mutate(indic_c17i = ifelse(c17_i >=3, 1, 0)) %>%
-  mutate(indic_c17j = ifelse(c17_j >=3, 1, 0)) %>%
-  mutate(indic_c17k = ifelse(c17_k >=3, 1, 0)) %>%
-  mutate(indic_c17l = ifelse(c17_l >=3, 1, 0)) %>% 
-  mutate(problem_drinking = indic_c17a + indic_c17b + indic_c17c + indic_c17d + indic_c17e + indic_c17f + indic_c17g + indic_c17h + indic_c17i +indic_c17j + indic_c17k + indic_c17l)
-```
 
 
