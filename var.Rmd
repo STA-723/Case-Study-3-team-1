@@ -45,6 +45,7 @@ background corr>0.05:a1,a2,a3,a4a,a6a,a7b,a7c,a7d,g1,g2,g6,g7,g12a,g17,g18,g3,"g
 
 ```{r load data}
 load("dat.rdata")
+nrow(dat1997)
 dat2001=dat2001 %>% dplyr::select(-coll_id,-serial)
 ## Study id of the complete cases
 ids01=dat2001%>% dplyr::select(study_id,f5,e3,e11:e14,c1,c2,c7,c10)%>%na.omit()%>%pull(study_id)
@@ -133,11 +134,12 @@ a7im=a7im%>%filter(!study_id%in%a7imid)
 dat_01=left_join(dat_01,a7im,"study_id")%>%dplyr::select(-a7a,-a7b,-a7c,-a7d)
 
 #here put the variables you want!!!
-dat_01f=dat_01%>%select(f1:f5,e3,e4,c4,c7,c11,c12,problem_drinking,a5,a6,a8d,a2,g6,g7,g8,g3,g15,g16)%>%na.omit()
+dat_01f=dat_01%>%select(f5,e3,e4,e8,e11:e13,c7,c11,c12,problem_drinking,a5,a6,a8d,a2,g6,g7,g8,g3,g15,g16)%>%na.omit()
 
 nrow(dat_01f)/nrow(dat2001)
 #e8 and a7 cause most missing. they both describe the "with whom you current live" can include them if you want.
-gg_miss_upset(dat_01%>%select(f1:f5,e3,e4,c7,c4,c7,c11,c12,problem_drinking,a5,a6,a8d,a2,g6,g7,g8,g3,g15,g16,c4))
+gg_miss_upset(dat_01%>%select(f5,e3,e4,c7,c7,c11,c12,problem_drinking,a5,a6,a8d,a2,g6,g7,g8,g3,g15,g16,c4))
+gg_miss_upset(dat2001%>%dplyr::select(f5,e3,e4,e11:e13))
 
 ```
 
@@ -209,14 +211,14 @@ greek life: a5, a6, a8d (exact same as 2001)
 # plz add drinking here (BK: I did, just added c7, for 2001)
 ids01_97=dat_01%>% dplyr::select(study_id,a5,a6,a8d,c7,c11,c12,problem_drinking,f5,e4,a2,g6,g3,g15,g14,g16)%>%na.omit()%>%pull(study_id)
 # select complete cases for 2001
-dat_01_97=dat_01%>%filter(study_id%in%ids01_97,f5!=99,f5!=10)%>%select(study_id,a5,a6,a8d,c7,c11,c12,problem_drinking,f5,e4,a2,g6,g3,g15,g14,g16,c4)
+dat_01j=dat_01%>%filter(study_id%in%ids01_97,f5!=99,f5!=10)%>%select(study_id,a5,a6,a8d,c7,c11,c12,problem_drinking,f5,e4,a2,g6,g3,g15,g14,g16)
 nrow(dat_01_97)/nrow(dat2001)
 
 # plz add drinking here (BK: I did, just added c5, for 1997)
 ids97_01=dat_97%>% dplyr::select(study_id,e3,f4,a2,c5,c11,c12,problem_drinking,g8,g3,g15,g14,g16,c8)%>%na.omit()%>%pull(study_id)
 
 # select complete cases for 2001
-dat_97_01=dat_97%>%filter(study_id%in%ids97_01,f4!=10)%>%mutate(c8=c8-1)%>%select(study_id,e3,f4,a2,c5,c11,c12,problem_drinking,g8,g3,g15,g14,g16,c8)
+dat_97j=dat_97%>%filter(study_id%in%ids97_01,f4!=10)%>%select(study_id,e3,f4,a2,c5,c11,c12,problem_drinking,g8,g3,g15,g14,g16)
 nrow(dat_97_01)/nrow(dat1997)
 
 ```
