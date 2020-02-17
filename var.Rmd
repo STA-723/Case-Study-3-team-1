@@ -23,6 +23,7 @@ library(ggmosaic)
 library(stringr)
 library(tidyverse)
 library(readr)
+library(knitr)
 library(stringr)
 library("lavaan")
 theme_set(theme_bw(base_size=12))
@@ -133,11 +134,12 @@ a7imid=dat_01%>%select(study_id,a7a:a7d)%>%gather(.,a7,value,-study_id)%>%na.omi
 a7im=a7im%>%filter(!study_id%in%a7imid)
 dat_01=left_join(dat_01,a7im,"study_id")%>%dplyr::select(-a7a,-a7b,-a7c,-a7d)
 
-#here put the variables you want!!!
+#here put the variables you want!!! #All data
 dat_01f=dat_01%>%select(f5,e3,e4,e8,e11:e13,c7,c11,c12,problem_drinking,a5,a6,a8d,a2,g6,g7,g8,g3,g15,g16)%>%na.omit()
-
 nrow(dat_01f)/nrow(dat2001)
+
 #e8 and a7 cause most missing. they both describe the "with whom you current live" can include them if you want.
+# All data
 gg_miss_upset(dat_01%>%select(f5,e3,e4,c7,c7,c11,c12,problem_drinking,a5,a6,a8d,a2,g6,g7,g8,g3,g15,g16,c4))
 gg_miss_upset(dat2001%>%dplyr::select(f5,e3,e4,e11:e13))
 
@@ -210,18 +212,132 @@ greek life: a5, a6, a8d (exact same as 2001)
 
 # plz add drinking here (BK: I did, just added c7, for 2001)
 ids01_97=dat_01%>% dplyr::select(study_id,a5,a6,a8d,c7,c11,c12,problem_drinking,f5,e4,a2,g6,g3,g15,g14,g16)%>%na.omit()%>%pull(study_id)
-# select complete cases for 2001
+# select complete cases for 2001 ###overlapping
 dat_01j=dat_01%>%filter(study_id%in%ids01_97,f5!=99,f5!=10)%>%select(study_id,a5,a6,a8d,c7,c11,c12,problem_drinking,f5,e4,a2,g6,g3,g15,g14,g16)
 nrow(dat_01_97)/nrow(dat2001)
 
 # plz add drinking here (BK: I did, just added c5, for 1997)
-ids97_01=dat_97%>% dplyr::select(study_id,e3,f4,a2,c5,c11,c12,problem_drinking,g8,g3,g15,g14,g16,c8)%>%na.omit()%>%pull(study_id)
+ids97_01=dat_97%>% dplyr::select(study_id,e3,f4,a2,a9,c5,c11,c12,problem_drinking,g8,g3,g15,g14,g16,c8)%>%na.omit()%>%pull(study_id)
 
-# select complete cases for 2001
-dat_97j=dat_97%>%filter(study_id%in%ids97_01,f4!=10)%>%select(study_id,e3,f4,a2,c5,c11,c12,problem_drinking,g8,g3,g15,g14,g16)
+# select complete cases for 2001 ###overlapping
+dat_97j=dat_97%>%filter(study_id%in%ids97_01,f4!=10)%>%select(study_id,e3,f4,a2,a9,c5,c11,c12,problem_drinking,g8,g3,g15,g14,g16)
 nrow(dat_97_01)/nrow(dat1997)
 
 ```
+Define a function to post-process posterior summary
+```{r}
+summarize_lavaan=function(fit){
+  a=summary(fit)
+  start=which(a$PE$op=="~") %>% min()
+  end=which(a$PE$op=="~") %>% max()
+  table=a$PE[start:end,5:8] %>% round(2)
+  rownames(table)=paste(a$PE[start:end,1],a$PE[start:end,2],a$PE[start:end,3])
+  colnames(table)=c("estimate","SE","z-score","P-value")
+  return(table)
+}
+```
+
+Build a model on 2001-non-overlapping variables (Recommended)
+Drink: c7, 11 12
+Smoke: e3, 8, 11
+Greek: a5,a8d
+
+Background variables used here:
+a2: male or not
+g6: health
+g15: mother drinking tendency
+```{r}
+model <- '
+  # measurement model
+     drink=~ c7 + c11 + c12
+     smoke=~ e3 + e8 + e11 
+     academic=~ f5 
+     greek=~ a5 + a8d
+     male=~ a2
+     health=~ g6 
+     mother=~ g15
+  # regressions
+    academic ~  drink + smoke + greek + male + health
+    drink ~ greek + male + mother
+    smoke ~ greek + male
+  # residual correlations
+    c7 ~~ c11 + c12
+    e3 ~~ e8 + e11
+'
+fit_01_non_overlap <- sem(model, data=dat_01f)
+table01=summarize_lavaan(fit_01_non_overlap)
+```
+Look at whether all regression coefficients are significant: academic~greek,  smoke~greek are not significant. Some interpretation can be done here.
+```{r}
+table01
+```
 
 
+Build a model on 1997-overlapping variables (Recommened)
 
+Academics:
+f4
+Drinking:
+c5, 11 ,12
+Smoking:
+e3
+Greek:
+a9
+
+Background variables used here:
+a2: male or not
+g8: health
+g15: mother drinking tendency
+```{r}
+model <- '
+  # measurement model
+     drink=~ c5 + c11 + c12
+     smoke=~ e3 
+     academic=~ f4 
+     greek=~ a9
+     male=~ a2
+     health=~ g8
+     mother=~ g15
+  # regressions
+    academic ~  drink + smoke + greek + male + health
+    drink ~ greek + male + mother
+    smoke ~ greek + male
+  # residual correlations
+    c5 ~~ c11 + c12
+ 
+'
+fit_97_overlap <- sem(model, data=dat_97j)
+table97=summarize_lavaan(fit_97_overlap)
+```
+```{r}
+table97
+```
+
+
+Build a model on 2001-overlapping variables (Not Recommended)
+
+Background variables used here:
+a2: male or not
+g6: health
+g15: mother drinking tendency
+```{r}
+model <- '
+  # measurement model
+     drink=~ c7 + c11 + c12
+     smoke=~ e4 
+     academic=~ f5 
+     greek=~ a5 + a8d
+     male=~ a2
+     health=~ g6 
+     mother=~ g15
+  # regressions
+    academic ~  drink + smoke + greek + male + health
+    drink ~ greek + male + mother
+    smoke ~ greek + male
+  # residual correlations
+    c7 ~~ c11 + c12
+   
+'
+fit_01_overlap <- sem(model, data=dat_01j)
+summary(fit_01_overlap, standardized=TRUE)
+```
