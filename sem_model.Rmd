@@ -94,8 +94,9 @@ summary(fit, standardized=TRUE)
 ```
 Fit a Bayesian Version
 ```{r}
+library(rjags)
 fit <- bsem(model, data=dat_01,
-            dp=dpriors(nu="normal(5,10)"),
+            dp=dpriors(nu="normal(0,100)"),
             sample= 3000,
             burnin = 500,
             n.chains = 1
