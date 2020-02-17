@@ -1,0 +1,61 @@
+---
+title: "Relation between Drinking and Smoking to Academic Performance"
+author: "Yunran Chen, Brian Kundinger, Rihui Ou"
+fontsize: "11pt"
+output:
+  pdf_document: 
+        latex_engine: xelatex
+  html_document:
+    keep_md: yes
+    fig_caption: TRUE
+urlcolor: blue
+linkcolor: blue
+bibliography: bibliography.bib
+link-citations: true
+geometry: margin=1.2in 
+header-includes: 
+  \usepackage{float} 
+  \floatplacement{figure}{H}
+---
+\fontsize{10}{11}
+\selectfont
+
+##### Abstract
+
+
+#### 1. Introduction
+
+
+
+#### 2. Materials and Methods
+
+ (Fig. \ref{fig:mapprice}, \ref{fig:mappop})[@lee2013carbayes] 
+
+#### 3. Results
+##### 3.1 Exploratory Data Analysis
+
+
+##### 3.2 Data Preprocessing
+
+\footnote{<https://data.cityofnewyork.us/City-Government/Neighborhood-Tabulation-Areas-NTA-/cpf4-rkhq>} 
+
+##### 3.3 Main Results
+
+
+
+##### 3.4 Sensitivity Analysis
+
+
+#### 5. Discussion
+
+
+
+\newpage
+
+#### Appendix
+
+
+
+##### Figures
+
+#### References

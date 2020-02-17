@@ -30,17 +30,14 @@ theme_set(theme_bw())
 
 ## Introduction
 
-- Data: 1997 and 2001 College Alcohol Study, 14428 and 10904 observations respectively
-- Goal: 
-  - How do drinking and smoking affect academic performance?
-  - Do the effects change from 1997 to 2001?
+- Data: 2001 College Alcohol Study, 10904 observations respectively
+- Goal: How do drinking and smoking affect academic performance?
 - Challenges: 
   - latent construct of drinking behavior and smoking behavior cannot be directly measured by a single observed variable
   - -> latent factor based model
 - Model: 
   - Structural Equation Model (SEM): studying interrelationships among observed and latent variables 
   - Build SEM for 2001 
-  - Build SEM for 1997 using "overlapping" predictors
 
 ## Pick variables 
 
@@ -50,15 +47,15 @@ theme_set(theme_bw())
     - c11: on how many occasions have a drink (1-2/3-5/...)
     - c12: how many drinks in these occasions (0/1/2/...)
     - problem_drinking(c17): how often has your drinking caused you to ...
+    - family drinking: g15,g16,g17
 - Smooking:
     - e3: on how many days smoke
     - e4: how many cigarettes a day
     - e8: smoke with people/alone/...
-    - e11-13: exposed to smoking
+    - e11-12: exposed to smoking
 - Background:
     - fraternity/sorority: a5,a6,a8d
-    - gender/race/health status/weight/height/mother's and father's alcohol use: a2,g3,g6,g7,g8,g15,g16
-
+    - gender,race: a2,g3a-e
 
 ## EDA: Relation between drinking behavior and GPA
 
@@ -81,13 +78,14 @@ dat_01 %>%
 ## EDA: Relation between smoking behavior and GPA
 
 The increasing proportion of higher GPA relate to
+
 - less exposed to smoking environment
 - the degree of addiction decrease
 - For the students smoke more than a pack per day, students with high GPA take a large proportion.
 
 ```{r eda smookinggpa2}
 dat_01 %>%
-  dplyr::select(e3,e4,e8,e11:e13,f5) %>% 
+  dplyr::select(e3,e4,e8,e11:e12,f5) %>% 
   mutate(f5=f5%>%
     factor(x = .,levels = 1:9,labels =  c("A","A-","B+","B","B-","C+","C","C-","D"))) %>%
   gather(data=.,key = key,value = value,-f5) %>% 
@@ -96,9 +94,10 @@ dat_01 %>%
     geom_bar(position = "fill")
 ```
 
-## EDA: Relation between drinking and background 
+## EDA: Relation between drinking/smoking and background 
 
 heavier use of alcohol/cigaret relate to 
+
 - member of a fraternity/sorority
 - live in fraternity/sorority 
 - think fraternity/sorority life is important
@@ -106,17 +105,14 @@ heavier use of alcohol/cigaret relate to
 - family accept heavy drinking
 
 heavier use of alcohol relate to 
+
 - male
-- weights/heights
 
-higher proportion of smoker related to 
-- poor health
-
-## EDA: Relation between drinking and background 
+## EDA: Relation between drinking/smoking and background 
 
 ```{r eda bkgdri,fig.width=6, fig.height=5}
 dat_01 %>%
-  dplyr::select(a2,a5,a6,a8d,g3,g6,g7,g8,g15,g16,c7) %>% 
+  dplyr::select(a2,a5,a6,a8d,g3,g15,g16,g17,c7) %>% 
   mutate(c7=case_when(
     c7==1 ~ "abstainer",
     c7==2 ~ "former",
@@ -133,9 +129,8 @@ dat_01 %>%
     geom_bar(position = "fill")
 ```
 
-## EDA: Relation between smoking and background 
 
-```{r eda bkg}
+```{r eda bkg, eval=FALSE, include=FALSE}
 dat_01 %>%
   dplyr::select(a5,a6,a8d,g3,g6,g7,g8,g15,g16,e3) %>% 
   mutate(smoke=if_else(e3==1,"non-smoke","smoke")%>%as.factor())%>%
@@ -146,68 +141,41 @@ dat_01 %>%
     geom_bar(position = "fill")
 ```
 
-## EDA: trend of drinking behavior from 1997 to 2001
-
-- similar relation 
-
-```{r trenddri}
-x=dat_01$c7
-x=case_when(
-    x==1 ~ "abstainer",
-    x==2 ~ "former",
-    x==3 ~ "infrequent",
-    x==4 ~ "light",
-    x==5 ~ "moderate",
-    x==6 ~ "heavy",
-    x==7 ~ "problem"
-  )
-y=dat_97$c5
-y=case_when(
-    y==1 ~ "abstainer",
-    y==2 ~ "former",
-    y==3 ~ "infrequent",
-    y==4 ~ "light",
-    y==5 ~ "moderate",
-    y==6 ~ "heavy",
-    y==7 ~ "problem"
-  )
-
-dat_drigpa=data.frame(
-  drink=c(x,y)%>%
-  factor(x = .,levels = c("abstainer","former","infrequent","light","moderate","heavy","problem")),
-  year=rep(c("97","01"),c(nrow(dat_97),nrow(dat_01)))%>%as.factor(),
-  gpa=c(dat_01$f5,dat_97$f4)%>%
-    factor(x = .,levels = 1:9,labels =  c("A","A-","B+","B","B-","C+","C","C-","D")))%>%na.omit()
-ggplot(data=dat_drigpa)+geom_mosaic(aes(x=product(drink,gpa),fill=drink))+
-  facet_grid(year~.)
-```
-
-## EDA: trend of smoking behavior from 1997 to 2001
-
-- more proportion of smokers in 1997, stronger relation to GPA in 2001
-
-```{r trendsmo}
-dat_smogpa=data.frame(
-  smo=c(dat_01$e3==1,dat_97$e3==1)%>%
-    factor(x = .,levels = c(TRUE,FALSE),labels =  c("None-smoke","smoke")),
-  year=rep(c("97","01"),c(nrow(dat_97),nrow(dat_01)))%>%as.factor(),
-  gpa=c(dat_01$f5,dat_97$f4)%>%
-    factor(x = .,levels = 1:9,labels =  c("A","A-","B+","B","B-","C+","C","C-","D")))%>%na.omit()
-ggplot(data=dat_smogpa)+geom_mosaic(aes(x=product(smo,gpa),fill=smo))+
-  facet_grid(year~.)
-```
-
 ## Data Preprocessing
 
 - Impute the NA's based on the relation to other questions
-- Obtain the complete cases (keep 88.5%(2001), 92.4%(1997))
+- create indicator `a6i` presenting whether a student lives in fraternity/sorority house
+- create problem_drinking counting how many times a student cause problems because of drinking
+- Obtain the complete cases (keep 87.5%)
 
 ## Model
 
+Add SEM formula here
+
+## Model
+
+```{r graph, echo=FALSE,  out.width = '70%', fig.align='center'}
+knitr::include_graphics("graph.png")
+```
 
 
 ## Results
 
+```{r lvar, echo=FALSE,  out.width = '80%', fig.align='center'}
+knitr::include_graphics("lvar.png")
+```
+
+## Results
+
+```{r reg, echo=FALSE,  out.width = '80%', fig.align='center'}
+knitr::include_graphics("reg.png")
+```
+
+## Interpretation 
+
+Add here
+
 ## Discussion
 
 - Data imputation
+- Comparison between 1997 to 2001
