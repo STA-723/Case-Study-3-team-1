@@ -207,6 +207,9 @@ ggplot(data=dat_smogpa)+geom_mosaic(aes(x=product(smo,gpa),fill=smo))+
 
 
 ## Results
+```{r}
+library("lavaan")
+```
 
 ## Discussion
 
