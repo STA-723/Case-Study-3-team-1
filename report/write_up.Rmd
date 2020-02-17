@@ -22,12 +22,24 @@ header-includes:
 
 ##### Abstract
 
-
 #### 1. Introduction
+The data we are studying is from a Harvard School of Public Health survey on alcohol and drug use among college students. The study was conducted over the span of a decade, with surveys administered in years 1993, 1997, 1999, and 2001, and it hoped to identify relationships between high risk behaviors and factors such as campus drinking culture, college drinking policies, and prevalence of greek life. 
 
+For this paper, we are interested in examining the relationship between smoking and drinking behaviors on academic performance. As is the case with many surveys, several of our variables are highly correlated because they use several questions to attempt to identify a few key behaviors. This high correlation among variables makes standard linear regression unreliable, and we therefore use a Structured Equation Model (SEM) to summarize a large number of variables into a smaller set of latent variables to conduct our analysis. 
 
 
 #### 2. Materials and Methods
+The variables have widely varying rates of missingness because respondents are instructed to skip certain questions based on previous answers. Therefore, to prepare our dataset for analysis, we first identified the questions relating to smoking and drinking that were not predicated on previous responses (E3, E4, C5), and retain only the complete cases among these. In 2001, this left us with 88.5% of the data, and in 1997, this left us with 92.4% of the data. 
+
+The missingness in the other variables in question was imputed based on previous responses. For example, when the 2001 survey instructs those who have not had a drink in the last 30 days to skip the C11 ("How many times have you had a drink in the last 30 days?"), we imputed the missing responses as zero. 
+
+
+###### Latent Variables
+Since social science surveys ask an abundance of questions to ascertain a small number of questions of interests, latent variables are a useful tool for answering our question. To construct the "Drinking Behavior" latent variable, we used variables relating to self-identification of drinking behavior (C7), and frequency of drinking over the last 30 days (C11). Lastly, we used a "problematic drinking" variables, which was the sum of the number of more extreme signs of alcoholism that responded had exhibited in the last 30 days, reported in C17. These variables were chosen because the were similar enough to construct a coherent latent variable that would be easy to interpret, but diverse enough to capture a broad collection of behaviors. 
+
+To construct the "Greek Life" latent variable, we used whether or not the respondent was a member of greek life (A4), whether or not they lived in their fraternity or sorority (A5), and whether or not they had indicated that greek life was important to them (A8d). 
+
+To construct the "Smoking Behavior" latent variable, we used frequency of smoking over the last 30 days (E3), amount of cigarettes smoked on average (E4), and whether the respondent smoked only on their own or with others (E8).
 
  (Fig. \ref{fig:mapprice}, \ref{fig:mappop})[@lee2013carbayes] 
 
@@ -59,3 +71,5 @@ header-includes:
 ##### Figures
 
 #### References
+
+
