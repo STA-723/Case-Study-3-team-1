@@ -23,52 +23,247 @@ header-includes:
 ##### Abstract
 
 #### 1. Introduction
+
 The data we are studying is from a Harvard School of Public Health survey on alcohol and drug use among college students. The study was conducted over the span of a decade, with surveys administered in years 1993, 1997, 1999, and 2001, and it hoped to identify relationships between high risk behaviors and factors such as campus drinking culture, college drinking policies, and prevalence of greek life. 
 
-For this paper, we are interested in examining the relationship between smoking and drinking behaviors on academic performance. As is the case with many surveys, several of our variables are highly correlated because they use several questions to attempt to identify a few key behaviors. This high correlation among variables makes standard linear regression unreliable, and we therefore use a Structured Equation Model (SEM) to summarize a large number of variables into a smaller set of latent variables to conduct our analysis. 
-
+For this paper, we are interested in examining the relationship between smoking and drinking behaviors on academic performance in 2001. As is the case with many surveys in behavioral and social studies, the smoking and drinking behaviors are measured indirectly through several highly correlated items in the questionaire. We therefore use a Structured Equation Model (SEM) to summarize a large number of variables into a smaller set of latent variables, and study the interrelationships among observed variables and latent variables. 
 
 #### 2. Materials and Methods
-The variables have widely varying rates of missingness because respondents are instructed to skip certain questions based on previous answers. Therefore, to prepare our dataset for analysis, we first identified the questions relating to smoking and drinking that were not predicated on previous responses (E3, E4, C5), and retain only the complete cases among these. In 2001, this left us with 88.5% of the data, and in 1997, this left us with 92.4% of the data. 
 
-The missingness in the other variables in question was imputed based on previous responses. For example, when the 2001 survey instructs those who have not had a drink in the last 30 days to skip the C11 ("How many times have you had a drink in the last 30 days?"), we imputed the missing responses as zero. 
+The Structure Equation Model contains two parts, the 
 
+$$
+\begin{aligned}
+  &\boldsymbol{y}=\boldsymbol{\nu}+\boldsymbol{\Lambda} \boldsymbol{\eta}+\boldsymbol{\epsilon}\\
+  &\boldsymbol{\eta}=\boldsymbol{\alpha}+\boldsymbol{B} \boldsymbol{\eta}+\boldsymbol{\zeta}
+\end{aligned}
+$$
 
-###### Latent Variables
-Since social science surveys ask an abundance of questions to ascertain a small number of questions of interests, latent variables are a useful tool for answering our question. To construct the "Drinking Behavior" latent variable, we used variables relating to self-identification of drinking behavior (C7), and frequency of drinking over the last 30 days (C11). Additionally, we used a "problematic drinking" variables, which was the sum of the number of more extreme signs of alcoholism that responded had exhibited in the last 30 days, reported in C17. Lastly, we used a number of variables relating to the alcohol use of the family of the respondent (G15-17). These variables were chosen because the were similar enough to construct a coherent latent variable that would be easy to interpret, but diverse enough to capture a broad collection of behaviors. 
+- $\boldsymbol{\Lambda}$ is the factor loading matrix,
+- $\boldsymbol{\eta}$ are the latent factors that are not observable, e.g., drinking tendency,
+- $\boldsymbol{\nu}$ and $\boldsymbol{\alpha}$ are intercepts for the observational and latent variables respectively, 
+- $\boldsymbol{\epsilon}$ and $\boldsymbol{\zeta}$ are residuals that are normally distrubuted. 
+- $\boldsymbol{B}$ measures the conditional dependency across latent variables. If $\boldsymbol{B}_{ij}\neq 0$, then $\boldsymbol{\eta}_i$ is a child of $\boldsymbol{\eta}_j$, i.e., there exists a directed edge from factor $j$ to $i$.
+
+For the ordinal questionnaire data, the continuous $\boldsymbol{y}$ is assumed to be a normal latent variable that underlies the observable questionnaire response $\boldsymbol{z}$, where $z=m$ if $y\in[\tau_{m-1}, \tau_m]$ and $\tau$ is the threshold.
+
+#### 3. Results
+
+We aim to construct latent variables representing drinking, smoking behavior and academic performance.
+
+To construct the "Drinking Behavior" latent variable, we used variables relating to self-identification of drinking behavior (C7), and frequency of drinking over the last 30 days (C11). Lastly, we used a "problematic drinking" variables, which was the sum of the number of more extreme signs of alcoholism that responded had exhibited in the last 30 days, reported in C17. These variables were chosen because the were similar enough to construct a coherent latent variable that would be easy to interpret, but diverse enough to capture a broad collection of behaviors. 
 
 To construct the "Greek Life" latent variable, we used whether or not the respondent was a member of greek life (A4), whether or not they lived in their fraternity or sorority (A5), and whether or not they had indicated that greek life was important to them (A8d). 
 
 To construct the "Smoking Behavior" latent variable, we used frequency of smoking over the last 30 days (E3), amount of cigarettes smoked on average (E4), and whether the respondent smoked only on their own or with others (E8).
 
- (Fig. \ref{fig:mapprice}, \ref{fig:mappop})[@lee2013carbayes] 
+The variables have widely varying rates of missingness because respondents are instructed to skip certain questions based on previous answers. Therefore, to prepare our dataset for analysis, we first identified the questions relating to smoking and drinking that were not predicated on previous responses (E3, E4, C5), and retain only the complete cases among these. In 2001, this left us with 88.5% of the data. 
 
-#### 3. Results
+The missingness in the other variables in question was imputed based on previous responses. For example, when the 2001 survey instructs those who have not had a drink in the last 30 days to skip the C11 ("How many times have you had a drink in the last 30 days?"), we imputed the missing responses as zero. 
+
+\ref{fig:mapprice}, \ref{fig:mappop})
+- Academic (response variable): f5 (GPA)
+- Drinking:
+    - c7: current use of alcohol (abstainer/former drinker/...)
+    - c11: on how many occasions have a drink (1-2/3-5/...)
+    - c12: how many drinks in these occasions (0/1/2/...)
+    - problem_drinking(c17): how often has your drinking caused you to ...
+- Smooking:
+    - e3: on how many days smoke
+    - e4: how many cigarettes a day
+    - e8: smoke with people/alone/...
+    - e11-13: exposed to smoking
+- Background:
+    - fraternity/sorority: a5,a6,a8d
+    - gender/race/health status/weight/height/mother's and father's alcohol use: a2,g3,g6,g7,g8,g15,g16
+
+
 ##### 3.1 Exploratory Data Analysis
 
+Data exploration suggest heavier use of alcohol is related to worse academic performance as shown in Figure \ref{fig:drigpa}. The  
+
+- Students with low GPA tend to be heavy drinker and cause problems
+
+\ref{fig:smogpa}
+The increasing proportion of higher GPA relate to
+- less exposed to smoking environment
+- the degree of addiction decrease
+- For the students smoke more than a pack per day, students with high GPA take a large proportion.
+
+\ref{fig:smobkg}
+\ref{fig:dribkg}
+heavier use of alcohol/cigaret relate to 
+- member of a fraternity/sorority
+- live in fraternity/sorority 
+- think fraternity/sorority life is important
+- mother/father is problem drinker
+- family accept heavy drinking
+
+heavier use of alcohol relate to 
+- male
 
 ##### 3.2 Data Preprocessing
 
-\footnote{<https://data.cityofnewyork.us/City-Government/Neighborhood-Tabulation-Areas-NTA-/cpf4-rkhq>} 
 
 ##### 3.3 Main Results
 
+We are interested the relationship between drinking and smoking to academic performance. test whether the paths are non-zero significantly and whether positive relation or negative. Also, we assume a relationship between smoking and drinking. Notice, Since greek life plays an important role to them from EDA and our background knowledge. We include greek life as a latent factor. Assume it will influence drinking, smoking, and academic. 
 
+Table presents the result for the measurement model, depicting the factor loading matrix. All the items are significant showing they are clear indicators for latent factors. And the signs align with our expectation. For the survey, the answers are encoded in the way that lower value represent a better lifestyle. For example, the abstainer is encoded as 1 in question c3. So all the signs are the same make sense. Lower drinking level correspond to light use of alcohol, similar for smoking. And lower level of greek life present less participation to greek life. Low value of a8d means do not think greek life is very important. — why it has negative sign.
+
+Table present the regression between the latent factors. Drinking and smoking are significantly related to the academic performance. Lower level of smoking/drinking relate to better academic performance. smoking and drinking are positive correlated. It is worth noting although greek life does not have directly influence on academic performance, but it is related to drinking and smoking and these two are related to academic performance. Influence in an indirectly way
+
+Notice the scale of the estimators does not have real meaning since they quantify the potential influence of latent factor which is unknown to us. 
 
 ##### 3.4 Sensitivity Analysis
 
+We consider a structured covariance between the observed varibles in our model. And we compare it with a non-structured covariance. The result is similar in terms of the p-values and the sign of the estimator. 
 
 #### 5. Discussion
+
 We might have improved our analysis through a different construction of our latent variables. For example, when designing the "Problematic Drinking" variable, our choice to include an indicator for respondents who exhibitted a behavior three times or more in the last 30 days was arbitrary. In fact, since having a hangover (C17a) is a much less severe indication of alcohol abuse than requiring medical treatment for alcohol overdose (C17l), we could have used different benchmarks for each variable when determining whether a response was truly a problematic drinking behavior.
 
 In future studies, we would also like to follow up on these results through mediation analysis. As we saw, our greek life latent variable was not significantly correlated with academic performance, but it was highly correlated with heavy drinking, which in tern was significantly correlated with worse academic performance. Since structural equation models do not lend themselves to interaction effects, one approach to investigate this further would be through mediation analysis. 
-
 
 \newpage
 
 #### Appendix
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(tidy=FALSE, warning=FALSE, message=FALSE, cache=TRUE, 
+               comment=NA, verbose=TRUE, fig.width=5, fig.height=3,echo=FALSE)
 
+library(corrplot)
+library(naniar)
+library(ggplot2)
+library(dplyr)
+library(tibble)
+library(tidyr)
+library(purrr)
+library(lme4)
+library(ggpubr)
+library(stringr)
+library(ggmosaic)
+library(MASS)
+library("lavaan")
+library(lavaanPlot)
+load("eda.rdata")
+load("model.rdata")
+#save.image(file = "eda.rdata")
+theme_set(theme_bw())
+```
+
+```{r edadrinking,fig.cap="\\label{fig:drigpa}Relation between drinking behavior and GPA"}
+dat_01 %>%
+  dplyr::select(c7,c11,c12,problem_drinking,f5) %>% 
+  mutate(f5=f5%>%
+    factor(x = .,levels = 1:9,labels =  c("A","A-","B+","B","B-","C+","C","C-","D"))) %>%
+  gather(data=.,key = key,value = value,-f5) %>% 
+  ggplot(aes(x=value,fill=f5)) +
+    facet_wrap(~ key, scales = "free") +
+    geom_bar(position = "fill")
+```
+
+```{r eda smookinggpa2,fig.cap="\\label{fig:smogpa}Relation between smoking behavior and GPA"}
+dat_01 %>%
+  dplyr::select(e3,e4,e8,e11:e12,f5) %>% 
+  mutate(f5=f5%>%
+    factor(x = .,levels = 1:9,labels =  c("A","A-","B+","B","B-","C+","C","C-","D"))) %>%
+  gather(data=.,key = key,value = value,-f5) %>% 
+  ggplot(aes(x=value,fill=f5)) +
+    facet_wrap(~ key, scales = "free") +
+    geom_bar(position = "fill")
+```
+
+```{r eda bkgdri,fig.width=6, fig.height=5,fig.cap="\\label{fig:dribkg}Relation between drinking and background"}
+dat_01 %>%
+  dplyr::select(a2,a5,a6,a8d,g3,g6,g7,g8,g15,g16,c7) %>% 
+  mutate(c7=case_when(
+    c7==1 ~ "abstainer",
+    c7==2 ~ "former",
+    c7==3 ~ "infrequent",
+    c7==4 ~ "light",
+    c7==5 ~ "moderate",
+    c7==6 ~ "heavy",
+    c7==7 ~ "problem"
+  )%>%factor(x = .,levels = c("abstainer","former","infrequent","light","moderate","heavy","problem")
+           ))%>%
+  gather(data=.,key = key,value = value,-c7) %>% 
+  ggplot(aes(x=value,fill=c7)) +
+    facet_wrap(~ key, scales = "free") +
+    geom_bar(position = "fill")
+```
+
+```{r eda bkg,fig.cap="\\label{fig:smobkg}Relation between smoking and background"}
+dat_01 %>%
+  dplyr::select(a5,a6,a8d,g3,g6,g7,g8,g15,g16,e3) %>% 
+  mutate(smoke=if_else(e3==1,"non-smoke","smoke")%>%as.factor())%>%
+  dplyr::select(-e3,-g7,-g8)%>%
+  gather(data=.,key = key,value = value,-smoke) %>% 
+  ggplot(aes(x=value,fill=smoke)) +
+    facet_wrap(~ key, scales = "free") +
+    geom_bar(position = "fill")
+```
+
+```{r sum}
+summarize_lavaan=function(fit){
+  a=summary(fit)
+  start=which(a$PE$op=="~") %>% min()
+  end=which(a$PE$op=="~") %>% max()
+  table=a$PE[start:end,5:8] %>% round(2)
+  rownames(table)=paste(a$PE[start:end,1],a$PE[start:end,2],a$PE[start:end,3])
+  colnames(table)=c("estimate","SE","z-score","P-value")
+  return(table)
+}
+
+categorize=function(dat,var_names=colnames(dat)){
+  for (name in var_names){
+    med=dat_01f[,name] %>% unlist %>% median #find medians
+    dat[,name]=ifelse(dat[,name]>=med, 1, 0)
+  }
+  dat=rbind(dat,rep(2,dim(dat)[2]))
+  return(dat)
+  
+}
+
+```
+
+
+```{r sem}
+model <- '
+  # measurement model
+     drink=~ c7 + c11 + c12 + problem_drinking + g15 + g16 + g17
+     smoke=~ e3 + e4 + e8 + e11 + e12
+     greek=~ a5 + a6i + a8d
+  # regressions
+    academic ~  drink + smoke + greek + male + white + black + asian +native_american
+    drink ~ greek 
+    smoke ~ greek 
+    drink ~ smoke
+  # residual correlations
+   e11~~e12
+   c11~~c12
+   c7~~c11
+   c7~~c12
+   c7~~problem_drinking
+   e3~~e4
+   a6i~~a8d
+   a5~~a8d
+   g15~~g16
+   g15~~g17
+   g16~~g17
+'
+fit_01_non_overlap <- sem(model, data=dat_01f, ordered = c("c7","c11","c12","e3","e4","e8","academic","a5","a8d","g15","g16","g17"))
+```
+
+```{r semgra}
+lavaanPlot(model = fit_01_non_overlap)
+```
+
+```{r semres}
+table01=summarize_lavaan(fit_01_non_overlap)
+(fit_01_non_overlap)
+```
 
 ##### Figures
 
