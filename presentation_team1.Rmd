@@ -32,30 +32,29 @@ theme_set(theme_bw())
 
 - Data: 2001 College Alcohol Study, 10904 observations respectively
 - Goal: How do drinking and smoking affect academic performance?
-- Challenges: 
-  - latent construct of drinking behavior and smoking behavior cannot be directly measured by a single observed variable
-  - -> latent factor based model
+- Challenges: High correlation between individual variables (survey data)
+- Solution: latent factor based model
 - Model: 
   - Structural Equation Model (SEM): studying interrelationships among observed and latent variables 
   - Build SEM for 2001 
 
 ## Pick variables 
 
-- Academic (response variable): f5 (GPA)
+- Academic (ordinal response variable): F5 (GPA)
 - Drinking:
-    - c7: current use of alcohol (abstainer/former drinker/...)
-    - c11: on how many occasions have a drink (1-2/3-5/...)
-    - c12: how many drinks in these occasions (0/1/2/...)
-    - problem_drinking(c17): how often has your drinking caused you to ...
-    - family drinking: g15,g16,g17
-- Smooking:
-    - e3: on how many days smoke
-    - e4: how many cigarettes a day
-    - e8: smoke with people/alone/...
-    - e11-12: exposed to smoking
+    - C7: Self-identified alcohol use (abstainer/former drinker/...)
+    - C11: Frequency of drinking
+    - C12: Amount of alcohol consumed when drinking
+    - problem_drinking(C17): how often has your drinking caused you to ...
+    - G15,G16,G17: Alcohol use in family
+- Smoking:
+    - E3: Frequency of mmoking
+    - E4: Average number of cigarettes per day
+    - E8: Social smoking (alone vs. with friends)
+    - E11-12: How often exposed to smoking
 - Background:
-    - fraternity/sorority: a5,a6,a8d
-    - gender,race: a2,g3a-e
+    - Fraternity/Sorority: A5,A6,A8d
+    - Gender,Race: A2,G3a-e
 
 ## EDA: Relation between drinking behavior and GPA
 
@@ -173,9 +172,11 @@ knitr::include_graphics("reg.png")
 
 ## Interpretation 
 
-Add here
-
+-Latent Variables: All coeffiecients are positive and all have significant p-value. We trust these variables constitute latent variables.
+-Regressions: Drinking and smoking associated with lower GPA (A is coded as 1)
+-Greek life not significant directly on academic performance, but highly correlated with drinking.
 ## Discussion
 
 - Data imputation
 - Comparison between 1997 to 2001
+- Explore effect of greek life more rigorously through Mediation Analysis
