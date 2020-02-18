@@ -37,6 +37,29 @@ theme_set(theme_bw())
 - Model: 
   - Structural Equation Model (SEM): studying interrelationships among observed and latent variables 
   - Build SEM for 2001 
+  
+## Data Preprocessing
+- Obtain the complete cases based on questions of interest with no screening (keep 87.5%)
+- Impute the NA's based on the relation to other questions
+- Create problem_drinking counting how many times a student cause problems because of drinking
+
+## Pick variables 
+
+- Academic (ordinal response variable): F5 (GPA)
+- Drinking:
+    - C7: Self-identified alcohol use (abstainer/former drinker/...)
+    - C11: Frequency of drinking
+    - C12: Amount of alcohol consumed when drinking
+    - problem_drinking (C17): how often has your drinking caused you to ...
+    - G15,G16,G17: Alcohol use in family
+- Smoking:
+    - E3: Frequency of mmoking
+    - E4: Average number of cigarettes per day
+    - E8: Social smoking (alone vs. with friends)
+    - E11-12: How often exposed to smoking
+- Background:
+    - Fraternity/Sorority: A5,A6,A8d
+    - Gender,Race: A2,G3a-e
 
 ## EDA: Relation between drinking behavior and GPA
 
@@ -83,8 +106,6 @@ Heavier use of alcohol relate to
 
 - male
 
-## EDA: Relation between drinking/smoking and background 
-
 ```{r eda bkgdri,fig.width=6, fig.height=5, eval=FALSE, include=FALSE}
 dat_01 %>%
   dplyr::select(a2,a5,a6,a8d,g3,g15,g16,g17,c7) %>% 
@@ -115,30 +136,6 @@ dat_01 %>%
     facet_wrap(~ key, scales = "free") +
     geom_bar(position = "fill")
 ```
-
-## Data Preprocessing
-- Obtain the complete cases based on questions of interest with no screening (keep 87.5%)
-- Impute the NA's based on the relation to other questions
-- Create problem_drinking counting how many times a student cause problems because of drinking
-
-
-## Pick variables 
-
-- Academic (ordinal response variable): F5 (GPA)
-- Drinking:
-    - C7: Self-identified alcohol use (abstainer/former drinker/...)
-    - C11: Frequency of drinking
-    - C12: Amount of alcohol consumed when drinking
-    - problem_drinking (C17): how often has your drinking caused you to ...
-    - G15,G16,G17: Alcohol use in family
-- Smoking:
-    - E3: Frequency of mmoking
-    - E4: Average number of cigarettes per day
-    - E8: Social smoking (alone vs. with friends)
-    - E11-12: How often exposed to smoking
-- Background:
-    - Fraternity/Sorority: A5,A6,A8d
-    - Gender,Race: A2,G3a-e
 
 ## Model
 
@@ -178,9 +175,9 @@ knitr::include_graphics("reg.png")
 
 ## Interpretation 
 
--Latent Variables: All coeffiecients are positive and all have significant p-value. We trust these variables constitute latent variables.
--Regressions: Drinking and smoking associated with lower GPA (A is coded as 1)
--Greek life not significant directly on academic performance, but highly correlated with drinking.
+- Latent Variables: All coeffiecients are positive and all have significant p-value. We trust these variables constitute latent variables.
+- Regressions: Drinking and smoking associated with lower GPA (A is coded as 1)
+- Greek life not significant directly on academic performance, but highly correlated with drinking.
 
 ## Discussion
 
