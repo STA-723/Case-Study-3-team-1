@@ -38,29 +38,9 @@ theme_set(theme_bw())
   - Structural Equation Model (SEM): studying interrelationships among observed and latent variables 
   - Build SEM for 2001 
 
-## Pick variables 
-
-- Academic (ordinal response variable): F5 (GPA)
-- Drinking:
-    - C7: Self-identified alcohol use (abstainer/former drinker/...)
-    - C11: Frequency of drinking
-    - C12: Amount of alcohol consumed when drinking
-    - problem_drinking(C17): how often has your drinking caused you to ...
-    - G15,G16,G17: Alcohol use in family
-- Smoking:
-    - E3: Frequency of mmoking
-    - E4: Average number of cigarettes per day
-    - E8: Social smoking (alone vs. with friends)
-    - E11-12: How often exposed to smoking
-- Background:
-    - Fraternity/Sorority: A5,A6,A8d
-    - Gender,Race: A2,G3a-e
-
 ## EDA: Relation between drinking behavior and GPA
 
-- The increasing proportion of higher GPA relate to less alcohol use
-- Students with high GPA tend to "overestimate" the severity (vice versa for students with lower GPA)
-- Students with low GPA tend to be heavy drinker and cause problems
+- Students with higher GPAs (A coded as 1) show lower alcohol use
 
 ```{r edadrinking}
 dat_01 %>%
@@ -76,11 +56,7 @@ dat_01 %>%
 
 ## EDA: Relation between smoking behavior and GPA
 
-The increasing proportion of higher GPA relate to
-
-- less exposed to smoking environment
-- the degree of addiction decrease
-- For the students smoke more than a pack per day, students with high GPA take a large proportion.
+Similarly, students with high GPAs show less smoking, but the correlation is less clear (E4 shows many students who smoke more than one pack a day with high GPA)
 
 ```{r eda smookinggpa2}
 dat_01 %>%
@@ -95,21 +71,21 @@ dat_01 %>%
 
 ## EDA: Relation between drinking/smoking and background 
 
-heavier use of alcohol/cigaret relate to 
+Heavier use of alcohol and cigarettes is related to
 
-- member of a fraternity/sorority
-- live in fraternity/sorority 
-- think fraternity/sorority life is important
-- mother/father is problem drinker
-- family accept heavy drinking
+- Member of a fraternity/sorority
+- Live in fraternity/sorority 
+- Think fraternity/sorority life is important
+- Mother/father drinks
+- Family accepting of heavy drinking
 
-heavier use of alcohol relate to 
+Heavier use of alcohol relate to 
 
 - male
 
 ## EDA: Relation between drinking/smoking and background 
 
-```{r eda bkgdri,fig.width=6, fig.height=5}
+```{r eda bkgdri,fig.width=6, fig.height=5, eval=FALSE, include=FALSE}
 dat_01 %>%
   dplyr::select(a2,a5,a6,a8d,g3,g15,g16,g17,c7) %>% 
   mutate(c7=case_when(
@@ -141,15 +117,45 @@ dat_01 %>%
 ```
 
 ## Data Preprocessing
-
+- Obtain the complete cases based on questions of interest with no screening (keep 87.5%)
 - Impute the NA's based on the relation to other questions
-- create indicator `a6i` presenting whether a student lives in fraternity/sorority house
-- create problem_drinking counting how many times a student cause problems because of drinking
-- Obtain the complete cases (keep 87.5%)
+- Create problem_drinking counting how many times a student cause problems because of drinking
+
+
+## Pick variables 
+
+- Academic (ordinal response variable): F5 (GPA)
+- Drinking:
+    - C7: Self-identified alcohol use (abstainer/former drinker/...)
+    - C11: Frequency of drinking
+    - C12: Amount of alcohol consumed when drinking
+    - problem_drinking (C17): how often has your drinking caused you to ...
+    - G15,G16,G17: Alcohol use in family
+- Smoking:
+    - E3: Frequency of mmoking
+    - E4: Average number of cigarettes per day
+    - E8: Social smoking (alone vs. with friends)
+    - E11-12: How often exposed to smoking
+- Background:
+    - Fraternity/Sorority: A5,A6,A8d
+    - Gender,Race: A2,G3a-e
 
 ## Model
 
-Add SEM formula here
+$$
+\begin{aligned}
+  &\boldsymbol{y}=\boldsymbol{\nu}+\boldsymbol{\Lambda} \boldsymbol{\eta}+\boldsymbol{\epsilon}\\
+  &\boldsymbol{\eta}=\boldsymbol{\alpha}+\boldsymbol{B} \boldsymbol{\eta}+\boldsymbol{\zeta}
+\end{aligned}
+$$
+
+- $\boldsymbol{\Lambda}$ is the factor loading matrix,
+- $\boldsymbol{\eta}$ are the latent factors that are not observable, e.g., drinking tendency,
+- $\boldsymbol{\nu}$ and $\boldsymbol{\alpha}$ are intercepts for the observational and latent variables respectively, 
+- $\boldsymbol{\epsilon}$ and $\boldsymbol{\zeta}$ are residuals that are normally distrubuted. 
+- $\boldsymbol{B}$ measures the conditional dependency across latent variables. If $\boldsymbol{B}_{ij}\neq 0$, then $\boldsymbol{\eta}_i$ is a child of $\boldsymbol{\eta}_j$, i.e., there exists a directed edge from factor $j$ to $i$.
+
+For the ordinal questionnaire data, the continuous $\boldsymbol{y}$ is assumed to be a normal latent variable that underlies the observable questionnaire response $\boldsymbol{z}$, where $z=m$ if $y\in[\tau_{m-1}, \tau_m]$ and $\tau$ is the threshold.
 
 ## Model
 
@@ -175,8 +181,9 @@ knitr::include_graphics("reg.png")
 -Latent Variables: All coeffiecients are positive and all have significant p-value. We trust these variables constitute latent variables.
 -Regressions: Drinking and smoking associated with lower GPA (A is coded as 1)
 -Greek life not significant directly on academic performance, but highly correlated with drinking.
+
 ## Discussion
 
-- Data imputation
-- Comparison between 1997 to 2001
+- Data imputation-probably missing not at random
+- Comparison between 1997 to 2001 to study the trend
 - Explore effect of greek life more rigorously through Mediation Analysis
