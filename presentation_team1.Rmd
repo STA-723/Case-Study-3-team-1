@@ -167,13 +167,13 @@ knitr::include_graphics("graph.png")
 ## Results
 
 ```{r lvar, echo=FALSE,  out.width = '80%', fig.align='center'}
-#knitr::include_graphics("lvar.png")
+knitr::include_graphics("lvar.png")
 ```
 
 ## Results
 
 ```{r reg, echo=FALSE,  out.width = '80%', fig.align='center'}
-#knitr::include_graphics("reg.png")
+knitr::include_graphics("reg.png")
 ```
 
 ## Interpretation 
