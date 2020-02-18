@@ -136,13 +136,13 @@ Greek life: a5,a6,a8d
 background corr>0.1: a2,a7(all related to gpa, a7b,a7c also related to smooking)g6,g7,g8,g3,g15,g16(insteresting that mother's drinking behavior influence a lot compared to father's)
 
 ```{r final2001}
-a7im=dat_01%>%select(study_id,a7a:a7d)%>%gather(.,a7,value,-study_id)%>%na.omit()%>%filter(value>0)%>%select(-value)%>%mutate(a7=as.factor(a7))
-a7imid=dat_01%>%select(study_id,a7a:a7d)%>%gather(.,a7,value,-study_id)%>%na.omit()%>%filter(value>0)%>%group_by(study_id)%>%summarise(n=n())%>%filter(n>1)%>%pull(study_id)
+a7im=dat_01%>%dplyr::select(study_id,a7a:a7d)%>%gather(.,a7,value,-study_id)%>%na.omit()%>%filter(value>0)%>%dplyr::select(-value)%>%mutate(a7=as.factor(a7))
+a7imid=dat_01%>%dplyr::select(study_id,a7a:a7d)%>%gather(.,a7,value,-study_id)%>%na.omit()%>%filter(value>0)%>%group_by(study_id)%>%summarise(n=n())%>%filter(n>1)%>%pull(study_id)
 a7im=a7im%>%filter(!study_id%in%a7imid)
 dat_01=left_join(dat_01,a7im,"study_id")
 
 #here put the variables you want!!! #All data
-dat_01f=dat_01%>%select(a2,a5,a6,a8d,
+dat_01f=dat_01%>%dplyr::select(a2,a5,a6,a8d,
                         f5,e3,e4,e8,e11,e12,
                         c7,c11,c12,problem_drinking,g15,g16,g17,
                         g3a:g3d)%>%na.omit()
@@ -224,6 +224,50 @@ table01=summarize_lavaan(fit_01_non_overlap)
 Look at whether all regression coefficients are significant: academic~greek,  smoke~greek are not significant. Some interpretation can be done here.
 ```{r}
 table01
+```
+
+# sensitivity analysis on correlation matrix
+
+```{r}
+model_un <- '
+  # measurement model
+     drink=~ c7 + c11 + c12 + problem_drinking + g15 + g16 + g17
+     smoke=~ e3 + e4 + e8 + e11 + e12
+     greek=~ a5 + a6i + a8d
+  # regressions
+    academic ~  drink + smoke + greek + male + white + black + asian +native_american
+    drink ~ greek 
+    smoke ~ greek 
+    drink ~ smoke
+'
+fit_01_non_overlap_un <- sem(model_un, data=dat_01f, ordered = c("c7","c11","c12","e3","e4","e8","academic","a5","a8d","g15","g16","g17"))
+table01=summarize_lavaan(fit_01_non_overlap_un)
+summary(fit_01_non_overlap_un)
+model1 <- '
+  # measurement model
+     drink=~ c7 + c11 + c12 + problem_drinking + g15 + g16 + g17
+     smoke=~ e3 + e4 + e8 + e11 + e12
+     greek=~ a5 + a6i + a8d
+  # regressions
+    academic ~  drink + smoke + greek + male + white + black + asian +native_american
+    drink ~ greek 
+    smoke ~ greek 
+    drink ~ smoke
+  # residual correlations
+   e11~~e12
+   c11~~c12
+   c7~~c11
+   c7~~c12
+   c7~~problem_drinking
+   e3~~e4
+   a6i~~a8d
+   a5~~a8d
+   g15~~g16
+   g15~~g17
+   g16~~g17
+'
+fit_01_non_overlap1 <- sem(model1, data=dat_01f, ordered = c("c7","c11","c12","e3","e4","e8","academic","a5","a8d","g15","g16","g17"))
+summarize_lavaan(fit_01_non_overlap1)
 ```
 
 ## SEM model for non-overlapping 2001
