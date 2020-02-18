@@ -1,6 +1,8 @@
 ---
 title: "Report"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -48,15 +50,30 @@ To construct the "Greek Life" latent variable, we used whether or not the respon
 
 To construct the "Smoking Behavior" latent variable, we used frequency of smoking over the last 30 days (E3), amount of cigarettes smoked on average (E4), and whether the respondent smoked only on their own or with others (E8).
 
-##2.3 Structural Equation Model
+## 2.3 Structural Equation Model
+To aggregate highly dependent features into low dimensional latent factors and study the relationship between factors, a structural equation model (SEM) is built (\ref{lavann}):
+$$
+\begin{aligned}
+  &\boldsymbol{y}=\boldsymbol{\nu}+\boldsymbol{\Lambda} \boldsymbol{\eta}+\boldsymbol{\epsilon}\\
+  &\boldsymbol{\eta}=\boldsymbol{\alpha}+\boldsymbol{B} \boldsymbol{\eta}+\boldsymbol{\zeta}
+\end{aligned}
+$$
+where $\boldsymbol{\Lambda}$ is a $n\times p$ factor loading matrix, $\boldsymbol{\eta}$ is a $p\times 1$ latent factor vector that is not observable, e.g., drinking behaviour. $\boldsymbol{\nu}$ and $\boldsymbol{\alpha}$ are intercepts. $\boldsymbol{\epsilon}$ and $\boldsymbol{\zeta}$ are residuals that are normally distributed. Typically, $\boldsymbol{\epsilon}$ and $\boldsymbol{\zeta}$ are assumed to possess a covariance structure. The $p\times p$ matrix $\boldsymbol{B}$ measures the conditional dependency across latent variables. If $\boldsymbol{B}_{ij}\neq 0$, then factor $\boldsymbol{\eta}_i$ is a child of $\boldsymbol{\eta}_j$, i.e., there exists a directed edge from factor $j$ to $i$. $\boldsymbol{I}-\boldsymbol{B}$ is invertible and identifiability constraints are applied (\ref{dunson2005}).
+
+The interpretation of $y$ depends on the type of data in the questionnaire. For the continuous questionnaire response, $y$ is the exact response value. For the ordinal response, the continuous $\boldsymbol{y}$ is assumed to be a normal latent variable that underlies the observable questionnaire response $\boldsymbol{z}$, where $z=m$, if $y\in[\tau_{m-1}, \tau_m]$ and $-\infty=\tau_0<\tau_1<\cdots<\tau_K=+\infty$ are the thresholds.
+
+The construction of latent variables is stated in Section 2.2. To describe the interrelationship of latent factors, we assume that "Smoking Behavior" can be explained by "Greek Life". "Drinking Behavior" can be explained by both "Greek Life" and "Smoking Behavior". "Academic" can be explained by all latent factors together with two exogenous variables "gender" and "race" (Figure 1).
+
+```{r daggraph, echo=FALSE,  out.width = '70%', fig.align='center', fig.width=4, fig.height=3, fig.cap="The directed acyclic dependency graph between variables. Observable responses are marked in square and factors are marked in circle." }
+knitr::include_graphics("graph.png")
+```
 
 # 3. Results
 
 
 
 # 4. Discussion
-Our model could have possibly benefited from more complex modelling of our latent variables. 
-
+Our model could have possibly benefited from more complex modelling of our latent variables. The questionnaire data is typically missing not at random and thus the missingness is not ignorable. Such missingness mechanism requires special methods for data imputation. Moreover, the trend of students' behaviors is often of interest to researchers so that a trend study could have been done. Furthermore, since the dependency between factors is intricate, a mediation analysis can be done to study the direct and indirect effect of factors.
 
 
 # Appendix
