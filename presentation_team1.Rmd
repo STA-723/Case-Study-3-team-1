@@ -102,9 +102,6 @@ Heavier use of alcohol and cigarettes is related to
 - Mother/father drinks
 - Family accepting of heavy drinking
 
-Heavier use of alcohol relate to 
-
-- male
 
 ```{r eda bkgdri,fig.width=6, fig.height=5, eval=FALSE, include=FALSE}
 dat_01 %>%
