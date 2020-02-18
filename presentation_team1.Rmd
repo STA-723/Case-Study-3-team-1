@@ -175,7 +175,7 @@ knitr::include_graphics("reg.png")
 
 ## Interpretation 
 
-- Latent Variables: All coeffiecients are positive and all have significant p-value. We trust these variables constitute latent variables.
+- Latent Variables: All variables have coefficients that align with expectations, and all have significant p-value. We trust these variables constitute latent variables.
 - Regressions: Drinking and smoking associated with lower GPA (A is coded as 1)
 - Greek life not significant directly on academic performance, but highly correlated with drinking.
 
