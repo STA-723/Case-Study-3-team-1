@@ -69,7 +69,7 @@ We conducted the analysis by apply R package `lavaan`[@rosseel2012lavaan]. Table
 
 Table \ref{tbl:structure} presents the relationship between the latent factors. Drinking and smoking are significantly related to the academic performance. Specifically, lower level of smoking/drinking is related to better academic performance. And smoking and drinking are positive correlated. It is worth noting although greek life does not have directly influence on academic performance, but it may indirectly influence academic performance through drinking and smoking. A mediation analysis is needed for further exploration.
 
-In terms of model fit evaluation, our model achieves good fit with $[0.029, 0.031]$ Root Mean Square Error of Approximation (RMSEA), which is less than the $0.05$ "good fit" cutoff as suggested by [@maccallum1996power].
+In terms of model fit evaluation, the fit statistics of our model is RMSEA $0.03$ (<0.08), CFI $1.00$ (>0.95) and SRMR $0.02$ (<0.06). We have strong evidence that this model achieves a good fit as suggested by [@hu1999cutoff].
 
 ##### 3.3 Sensitivity Analysis
 
@@ -210,6 +210,7 @@ model <- '
    g16~~g17
 '
 fit_01_non_overlap <- sem(model, data=dat_01f, ordered = c("c7","c11","c12","e3","e4","e8","academic","a5","a8d","g15","g16","g17"))
+fit_01_non_overlap %>% fitmeasures()
 
 model <- '
   # measurement model
