@@ -22,102 +22,60 @@ header-includes:
 
 ##### Abstract
 
+We aim to examine the relationship between smoking and drinking behaviors on academic performance of college students. Our data comes from Harvard School of Public Health survey on alcohol and drug use among college students conducted in 2001. We apply a structural equation model to construct latent factors for drinking and smoking behavior, and explore their relationship to GPA with adjusting the potential effects from Greek life and other background such as gender and race. Our result suggests heavy use of alcohol/cigarette may relate to worse academic performance, and use of alcohol and cigarette is positively correlated. In addition, active participation in Greek life may influence the academic performance though drinking and smoking.
+
 #### 1. Introduction
 
 The data we are studying is from a Harvard School of Public Health survey on alcohol and drug use among college students. The study was conducted over the span of a decade, with surveys administered in years 1993, 1997, 1999, and 2001, and it hoped to identify relationships between high risk behaviors and factors such as campus drinking culture, college drinking policies, and prevalence of greek life. 
 
-For this paper, we are interested in examining the relationship between smoking and drinking behaviors on academic performance in 2001. As is the case with many surveys in behavioral and social studies, the smoking and drinking behaviors are measured indirectly through several highly correlated items in the questionaire. We therefore use a Structured Equation Model (SEM) to summarize a large number of variables into a smaller set of latent variables, and study the interrelationships among observed variables and latent variables. 
+For this paper, we are interested in examining the relationship between smoking and drinking behaviors on academic performance of college students surveyed in 2001. As is the case with many surveys in behavioral and social studies, the smoking and drinking behaviors are measured indirectly through several highly correlated items in the questionaire. We therefore use a Structural Equation Model (SEM) [@muthen1984general] to summarize a large number of variables into a smaller set of latent variables, and study the interrelationships among observed variables and latent variables. 
 
 #### 2. Materials and Methods
 
-The Structure Equation Model contains two parts, the 
+##### 2.1 Data cleaning and transformations
+
+The variables have widely varying rates of missingness because respondents are instructed to skip certain questions based on previous answers. Therefore, to prepare our dataset for analysis, we first identified the questions relating to smoking and drinking that were not predicated on previous responses (E3, E4, C5), and retain only the complete cases among these. This left us with 88.5% of the data. The missingness in the other variables in question was imputed based on previous responses. For example, when the survey instructs those who have not had a drink in the last 30 days to skip the C11 ("How many times have you had a drink in the last 30 days?"), we imputed the missing responses as zero. 
+
+##### 2.2 Structural Equation Model
+
+To aggregate highly dependent features into low dimensional latent factors and study the relationship between factors, a structural equation model (SEM) is built:
 
 $$
 \begin{aligned}
-  &\boldsymbol{y}=\boldsymbol{\nu}+\boldsymbol{\Lambda} \boldsymbol{\eta}+\boldsymbol{\epsilon}\\
-  &\boldsymbol{\eta}=\boldsymbol{\alpha}+\boldsymbol{B} \boldsymbol{\eta}+\boldsymbol{\zeta}
+  &\boldsymbol{y}=\boldsymbol{\nu}+\boldsymbol{\Lambda} \boldsymbol{\eta}+\boldsymbol{\epsilon}& (1)\\
+  &\boldsymbol{\eta}=\boldsymbol{\alpha}+\boldsymbol{B} \boldsymbol{\eta}+\boldsymbol{\zeta}& (2)
 \end{aligned}
 $$
+where $\boldsymbol{\Lambda}$ is a $n\times p$ factor loading matrix, $\boldsymbol{\eta}$ is a $p\times 1$ latent factor vector that is not observable, e.g., drinking behaviour. $\boldsymbol{\nu}$ and $\boldsymbol{\alpha}$ are intercepts. $\boldsymbol{\epsilon}$ and $\boldsymbol{\zeta}$ are residuals that are normally distributed. Typically, $\boldsymbol{\epsilon}$ and $\boldsymbol{\zeta}$ are assumed to possess a covariance structure. The $p\times p$ matrix $\boldsymbol{B}$ measures the conditional dependency across latent variables. If $\boldsymbol{B}_{ij}\neq 0$, then factor $\boldsymbol{\eta}_i$ is a child of $\boldsymbol{\eta}_j$, i.e., there exists a directed edge from factor $j$ to $i$. $\boldsymbol{I}-\boldsymbol{B}$ is invertible and identifiability constraints are applied.
 
-- $\boldsymbol{\Lambda}$ is the factor loading matrix,
-- $\boldsymbol{\eta}$ are the latent factors that are not observable, e.g., drinking tendency,
-- $\boldsymbol{\nu}$ and $\boldsymbol{\alpha}$ are intercepts for the observational and latent variables respectively, 
-- $\boldsymbol{\epsilon}$ and $\boldsymbol{\zeta}$ are residuals that are normally distrubuted. 
-- $\boldsymbol{B}$ measures the conditional dependency across latent variables. If $\boldsymbol{B}_{ij}\neq 0$, then $\boldsymbol{\eta}_i$ is a child of $\boldsymbol{\eta}_j$, i.e., there exists a directed edge from factor $j$ to $i$.
+The interpretation of $y$ depends on the type of data in the questionnaire. For the continuous questionnaire response, $y$ is the exact response value. For the ordinal response, the continuous $\boldsymbol{y}$ is assumed to be a normal latent variable that underlies the observable questionnaire response $\boldsymbol{z}$, where $z=m$, if $y\in[\tau_{m-1}, \tau_m]$ and $-\infty=\tau_0<\tau_1<\cdots<\tau_K=+\infty$ are the thresholds.
 
-For the ordinal questionnaire data, the continuous $\boldsymbol{y}$ is assumed to be a normal latent variable that underlies the observable questionnaire response $\boldsymbol{z}$, where $z=m$ if $y\in[\tau_{m-1}, \tau_m]$ and $\tau$ is the threshold.
+The first component is measurement model (equation (1)), or confirmatory factor analysis (CFA), which summarize highly correlated observed variables to latent variables with taking measurement errors into consideration. We aim to construct latent variables representing drinking, smoking behavior and academic performance. The latent factor for greek life is also introduced since it may have potential influence on both drinking/smoking behavior and academic performance. 
+
+We choose the variables which were similar enough to construct a coherent latent variable that would be easy to interpret, but diverse enough to capture a broad collection of behaviors. We also prefer ordinal variables and variables with less missing values. For "Drinking Behavior" latent variable, we used variables relating to self-identification of drinking behavior (C7), frequency (C11) and amount(C12) of drinking over the last 30 days (C11), and the use (G15,G17) and altitude (G16) in family. Lastly, we used a "problematic drinking" variables, which was the sum of the number of more extreme signs of alcoholism that responded had exhibited in the last 30 days, reported in C17. For "Smoking Behavior" latent variable, we used frequency of smoking over the last 30 days (E3), amount of cigarettes smoked on average (E4), whether the respondent smoked only on their own or with others (E8), and how often exposed to smoking (E11,E12). For academic performance, we consider the  To construct the "Greek Life" latent variable, we used whether or not the respondent was a member of greek life (A4), whether or not they lived in their fraternity or sorority (A5), and whether or not they had indicated that greek life was important to them (A8d). 
+
+The second component is strutural model (equation (2)), or structural regression model between the latent factors. We assume that "Smoking Behavior" can be explained by "Greek Life". "Drinking Behavior" can be explained by both "Greek Life" and "Smoking Behavior". "Academic" can be explained by all latent factors together wit.
+
+```{r daggraph, echo=FALSE,  out.width = '40%', fig.align='center', fig.cap="\\label{fig:graph}The directed acyclic dependency graph between variables. Observable responses are marked in square and factors are marked in circle." }
+knitr::include_graphics("graph.png")
+```
+
 
 #### 3. Results
 
-We aim to construct latent variables representing drinking, smoking behavior and academic performance.
-
-To construct the "Drinking Behavior" latent variable, we used variables relating to self-identification of drinking behavior (C7), and frequency of drinking over the last 30 days (C11). Lastly, we used a "problematic drinking" variables, which was the sum of the number of more extreme signs of alcoholism that responded had exhibited in the last 30 days, reported in C17. These variables were chosen because the were similar enough to construct a coherent latent variable that would be easy to interpret, but diverse enough to capture a broad collection of behaviors. 
-
-To construct the "Greek Life" latent variable, we used whether or not the respondent was a member of greek life (A4), whether or not they lived in their fraternity or sorority (A5), and whether or not they had indicated that greek life was important to them (A8d). 
-
-To construct the "Smoking Behavior" latent variable, we used frequency of smoking over the last 30 days (E3), amount of cigarettes smoked on average (E4), and whether the respondent smoked only on their own or with others (E8).
-
-The variables have widely varying rates of missingness because respondents are instructed to skip certain questions based on previous answers. Therefore, to prepare our dataset for analysis, we first identified the questions relating to smoking and drinking that were not predicated on previous responses (E3, E4, C5), and retain only the complete cases among these. In 2001, this left us with 88.5% of the data. 
-
-The missingness in the other variables in question was imputed based on previous responses. For example, when the 2001 survey instructs those who have not had a drink in the last 30 days to skip the C11 ("How many times have you had a drink in the last 30 days?"), we imputed the missing responses as zero. 
-
-\ref{fig:mapprice}, \ref{fig:mappop})
-- Academic (response variable): f5 (GPA)
-- Drinking:
-    - c7: current use of alcohol (abstainer/former drinker/...)
-    - c11: on how many occasions have a drink (1-2/3-5/...)
-    - c12: how many drinks in these occasions (0/1/2/...)
-    - problem_drinking(c17): how often has your drinking caused you to ...
-- Smooking:
-    - e3: on how many days smoke
-    - e4: how many cigarettes a day
-    - e8: smoke with people/alone/...
-    - e11-13: exposed to smoking
-- Background:
-    - fraternity/sorority: a5,a6,a8d
-    - gender/race/health status/weight/height/mother's and father's alcohol use: a2,g3,g6,g7,g8,g15,g16
-
-
 ##### 3.1 Exploratory Data Analysis
 
-Data exploration suggest heavier use of alcohol is related to worse academic performance as shown in Figure \ref{fig:drigpa}. The  
+Data exploration suggests heavier use of alcohol is related to worse academic performance. As shown in Figure \ref{fig:drigpa}, as the increase of the level of each item (heavier use of alcohol), the proportion of higher GPA students decrease. Especially, students with extreme high level on `problem drinking` are all students with GPA less than A-. Figure \ref{fig:smogpa} suggests the increasing proportion of higher GPA is related to increasing use of cigarretes and less exposed to smoking environment. Figure \ref{fig:smobkg} and \ref{fig:dribkg} suggest heavier use of alcohol/cigarette relate to active participation in Greek life or heavier use of alcohol/cigarette in family. 
 
-- Students with low GPA tend to be heavy drinker and cause problems
+##### 3.2 Main Results
 
-\ref{fig:smogpa}
-The increasing proportion of higher GPA relate to
-- less exposed to smoking environment
-- the degree of addiction decrease
-- For the students smoke more than a pack per day, students with high GPA take a large proportion.
+Table 1 presents the result for the measurement model, depicting the factor loading matrix. All the items are significant showing they are clear indicators for latent factors. And the signs align with our expectation. For the survey, the answers are encoded in the way that lower value represent a better lifestyle. For example, the abstainer is encoded as 1 in question c3. Therefore all the signs are reasonable. As a result, lower value of drinking/smoking factor corresponds to light use of alcohol/cigarette. And lower level of greek life factor presents less participation to greek life. Notice that low value of a8d indicates the greek life is very important for students, resulting in the negative sign. 
 
-\ref{fig:smobkg}
-\ref{fig:dribkg}
-heavier use of alcohol/cigaret relate to 
-- member of a fraternity/sorority
-- live in fraternity/sorority 
-- think fraternity/sorority life is important
-- mother/father is problem drinker
-- family accept heavy drinking
+Table 2 presents the relationship between the latent factors. Drinking and smoking are significantly related to the academic performance. Specifically, lower level of smoking/drinking is related to better academic performance. And smoking and drinking are positive correlated. It is worth noting although greek life does not have directly influence on academic performance, but it may indirectly influence academic performance through drinking and smoking. A mediation analysis is needed for further exploration.
 
-heavier use of alcohol relate to 
-- male
+##### 3.3 Sensitivity Analysis
 
-##### 3.2 Data Preprocessing
-
-
-##### 3.3 Main Results
-
-We are interested the relationship between drinking and smoking to academic performance. test whether the paths are non-zero significantly and whether positive relation or negative. Also, we assume a relationship between smoking and drinking. Notice, Since greek life plays an important role to them from EDA and our background knowledge. We include greek life as a latent factor. Assume it will influence drinking, smoking, and academic. 
-
-Table presents the result for the measurement model, depicting the factor loading matrix. All the items are significant showing they are clear indicators for latent factors. And the signs align with our expectation. For the survey, the answers are encoded in the way that lower value represent a better lifestyle. For example, the abstainer is encoded as 1 in question c3. So all the signs are the same make sense. Lower drinking level correspond to light use of alcohol, similar for smoking. And lower level of greek life present less participation to greek life. Low value of a8d means do not think greek life is very important. — why it has negative sign.
-
-Table present the regression between the latent factors. Drinking and smoking are significantly related to the academic performance. Lower level of smoking/drinking relate to better academic performance. smoking and drinking are positive correlated. It is worth noting although greek life does not have directly influence on academic performance, but it is related to drinking and smoking and these two are related to academic performance. Influence in an indirectly way
-
-Notice the scale of the estimators does not have real meaning since they quantify the potential influence of latent factor which is unknown to us. 
-
-##### 3.4 Sensitivity Analysis
-
-We consider a structured covariance between the observed varibles in our model. And we compare it with a non-structured covariance. The result is similar in terms of the p-values and the sign of the estimator. 
+We conduct a sensitivity analysis on the specification of covariance matrix of residuals in our model. We compare the result based on a structured covariance and unstructured covariance. The result still holds since the p-values and the signs of the estimator stay the same and only slight changes of the esimators. This suggests our model is relatively robust.
 
 #### 5. Discussion
 
@@ -229,7 +187,7 @@ categorize=function(dat,var_names=colnames(dat)){
 ```
 
 
-```{r sem}
+```{r sem, eval=FALSE, include=FALSE}
 model <- '
   # measurement model
      drink=~ c7 + c11 + c12 + problem_drinking + g15 + g16 + g17
@@ -254,18 +212,28 @@ model <- '
    g16~~g17
 '
 fit_01_non_overlap <- sem(model, data=dat_01f, ordered = c("c7","c11","c12","e3","e4","e8","academic","a5","a8d","g15","g16","g17"))
+
+model <- '
+  # measurement model
+     drink=~ c7 + c11 + c12 + problem_drinking + g15 + g16 + g17
+     smoke=~ e3 + e4 + e8 + e11 + e12
+     greek=~ a5 + a6i + a8d
+  # regressions
+    academic ~  drink + smoke + greek + male + white + black + asian +native_american
+    drink ~ greek 
+    smoke ~ greek 
+    drink ~ smoke
+'
+fit_01_non_overlap <- sem(model, data=dat_01f, ordered = c("c7","c11","c12","e3","e4","e8","academic","a5","a8d","g15","g16","g17"))
 ```
 
-```{r semgra}
-lavaanPlot(model = fit_01_non_overlap)
+```{r lvar, echo=FALSE,  out.width = '80%', fig.align='center',fig.cap="\\label{tbl:measure}Result of Measurement Models"}
+knitr::include_graphics("lvar.png")
 ```
 
-```{r semres}
-table01=summarize_lavaan(fit_01_non_overlap)
-(fit_01_non_overlap)
+```{r reg, echo=FALSE,  out.width = '80%', fig.align='center',fig.cap="\\label{tbl:structure}Result of Structural Models"}
+knitr::include_graphics("reg.png")
 ```
-
-##### Figures
 
 #### References
 
