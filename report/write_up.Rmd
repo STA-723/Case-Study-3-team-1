@@ -1,21 +1,20 @@
 ---
 title: "Relation between Drinking and Smoking to Academic Performance"
 author: "Yunran Chen, Brian Kundinger, Rihui Ou"
-fontsize: "11pt"
+fontsize: 11pt
 output:
-  pdf_document: 
-        latex_engine: xelatex
+  pdf_document:
+    latex_engine: xelatex
+  word_document: default
   html_document:
+    fig_caption: yes
     keep_md: yes
-    fig_caption: TRUE
-urlcolor: blue
+header-includes: \usepackage{float} \floatplacement{figure}{H}
+link-citations: yes
 linkcolor: blue
+geometry: margin=1.2in
 bibliography: bibliography.bib
-link-citations: true
-geometry: margin=1.2in 
-header-includes: 
-  \usepackage{float} 
-  \floatplacement{figure}{H}
+urlcolor: blue
 ---
 \fontsize{10}{11}
 \selectfont
@@ -69,6 +68,8 @@ Data exploration suggests heavier use of alcohol is related to worse academic pe
 We conducted the analysis by apply R package `lavaan`[@rosseel2012lavaan]. Table \ref{tbl:measure} presents the result for the measurement model, depicting the factor loading matrix. All the items are significant showing they are clear indicators for latent factors. And the signs align with our expectation. For the survey, the answers are encoded in the way that lower value represent a better lifestyle. For example, the abstainer is encoded as 1 in question c3. Therefore all the signs are reasonable. As a result, lower value of drinking/smoking factor corresponds to light use of alcohol/cigarette. And lower level of greek life factor presents less participation to greek life. Notice that low value of a8d indicates the greek life is very important for students, resulting in the negative sign. 
 
 Table \ref{tbl:structure} presents the relationship between the latent factors. Drinking and smoking are significantly related to the academic performance. Specifically, lower level of smoking/drinking is related to better academic performance. And smoking and drinking are positive correlated. It is worth noting although greek life does not have directly influence on academic performance, but it may indirectly influence academic performance through drinking and smoking. A mediation analysis is needed for further exploration.
+
+In terms of model fit evaluation, our model achieves good fit with $[0.029, 0.031]$ Root Mean Square Error of Approximation (RMSEA), which is less than the $0.05$ "good fit" cutoff as suggested by [@maccallum1996power].
 
 ##### 3.3 Sensitivity Analysis
 
